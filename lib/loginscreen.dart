@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:salesrev/homescreen.dart';
-import 'package:salesrev/utils/colors.dart';
-import 'package:salesrev/utils/login.dart';
+import 'package:salesrep/homescreen.dart';
+import 'package:salesrep/utils/colors.dart';
+import 'package:salesrep/utils/login.dart';
 
 class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});

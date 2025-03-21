@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:salesrev/loginscreen.dart';
+import 'package:salesrep/loginscreen.dart';
+
 
 void main() {
   runApp(const MyApp());
