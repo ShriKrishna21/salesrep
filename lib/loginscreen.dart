@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:salesrep/homescreen.dart';
 import 'package:salesrep/utils/colors.dart';
 import 'package:salesrep/utils/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});
@@ -17,49 +18,66 @@ class _LoginscreenState extends State<Loginscreen> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final response=0;
+  final response = 0;
 
   loginmodel? _loginData; // Variable to store fetched login data
 
   @override
   void initState() {
     super.initState();
-   // fetchAlbum();
+    // fetchAlbum();
   }
 
   Future<void> fetchAlbum() async {
+    final  SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      const url='http://10.100.13.138:8099/web/session/authenticate';
+      const url = 'http://10.100.13.138:8099/web/session/authenticate';
 
       final response = await http.post(
         Uri.parse(url),
-         headers: {
-        'Content-Type': 'application/json', // Required for JSON-RPC requests
-      },
-      
-      body: jsonEncode({
-        'jsonrpc': "2.0",
-        'method': "call",
-        'params': {
-          "login":usernameController.text,
-          "password":passwordController.text,
-        }
-      }),     
-      
+        headers: {
+          'Content-Type': 'application/json', // Required for JSON-RPC requests
+        },
+        body: jsonEncode({
+          'jsonrpc': "2.0",
+          'method': "call",
+          'params': {
+            "login": usernameController.text,
+            "password": passwordController.text,
+          }
+        }),
       );
-      
-//"login":usernameController.text=="adtmin"?"admin":"wrong",
-          // "password": passwordController.text=="adtmin"?"admin":"wrong",
 
       if (response.statusCode == 200) {
         print(response.statusCode);
         final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
         setState(() {
           _loginData = loginmodel.fromJson(jsonResponse);
-          print(" login data e44444444444444444444444444444444444${_loginData!.toJson().toString()}");
+          print(" login data ==> ${_loginData!.toJson().toString()}");
         });
+        print(" result code => ${_loginData!.result!.code}");
+        if (_loginData!.result!.code == "200") {
+          print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        
+          print("2");
+          await prefs.setString('apikey', _loginData!.result!.apiKey.toString());
+          print("3");
+
+          final String? action = prefs.getString('apikey');
+          print(" API KEY => $action");
+          print("4444444444444444444444444444444$_loginData");
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Homescreen()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Login failed, please try again.")),
+          );
+        }
       } else {
-        throw Exception("Failed to fetch the API: Status code ${response.statusCode}");
+        throw Exception(
+            "Failed to fetch the API: Status code ${response.statusCode}");
       }
     } catch (error) {
       print("Error fetching data: $error");
@@ -108,7 +126,8 @@ class _LoginscreenState extends State<Loginscreen> {
                     ),
                     const SizedBox(height: 20),
                     Padding(
-                      padding: EdgeInsets.all(MediaQuery.of(context).size.height / 50),
+                      padding: EdgeInsets.all(
+                          MediaQuery.of(context).size.height / 50),
                       child: TextFormField(
                         controller: usernameController,
                         validator: (value) {
@@ -127,7 +146,8 @@ class _LoginscreenState extends State<Loginscreen> {
                     ),
                     const SizedBox(height: 5),
                     Padding(
-                      padding: EdgeInsets.all(MediaQuery.of(context).size.height / 50),
+                      padding: EdgeInsets.all(
+                          MediaQuery.of(context).size.height / 50),
                       child: TextFormField(
                         controller: passwordController,
                         obscureText: true,
@@ -159,20 +179,9 @@ class _LoginscreenState extends State<Loginscreen> {
                         ),
                       ),
                       onPressed: () async {
-                     //   fetchAlbum();
+                        //   fetchAlbum();
                         if (_formKey.currentState?.validate() ?? false) {
                           await fetchAlbum();
-                          if (_loginData!.result!.code=="200") {
-                            print("4444444444444444444444444444444$_loginData");
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => const Homescreen()),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Login failed, please try again.")),
-                            );
-                          }
                         }
                       },
                       child: const Text(
