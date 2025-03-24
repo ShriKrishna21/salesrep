@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Coustmer extends StatefulWidget {
   const Coustmer({super.key});
@@ -22,31 +25,29 @@ class _CoustmerState extends State<Coustmer> {
   TextEditingController familyhead = TextEditingController();
   TextEditingController fathersname = TextEditingController();
   TextEditingController mothername = TextEditingController();
-    TextEditingController spousename = TextEditingController();
+  TextEditingController spousename = TextEditingController();
   TextEditingController hno = TextEditingController();
-    TextEditingController streetnumber = TextEditingController();
+  TextEditingController streetnumber = TextEditingController();
   TextEditingController city = TextEditingController();
   TextEditingController pincode = TextEditingController();
-   TextEditingController adddress = TextEditingController();
-
+  TextEditingController adddress = TextEditingController();
 
   TextEditingController mobile = TextEditingController();
-   TextEditingController feedback_to_improve = TextEditingController();
-   TextEditingController reason_for_not_reading = TextEditingController();
-    TextEditingController current_newspaper = TextEditingController();
-     TextEditingController reason_for_not_taking_eenadu = TextEditingController();
-    TextEditingController reason_for_not_taking_offer = TextEditingController();
+  TextEditingController feedback_to_improve = TextEditingController();
+  TextEditingController reason_for_not_reading = TextEditingController();
+  TextEditingController current_newspaper = TextEditingController();
+  TextEditingController reason_for_not_taking_eenadu = TextEditingController();
+  TextEditingController reason_for_not_taking_offer = TextEditingController();
 
-
-     TextEditingController central_designation = TextEditingController();
-        TextEditingController central_department = TextEditingController();
-         TextEditingController psu_designation = TextEditingController();
-        TextEditingController psu_department = TextEditingController();
-        TextEditingController statejob_role = TextEditingController();
-        TextEditingController statejob_department = TextEditingController();
-        
+  // TextEditingController central_designation = TextEditingController();
+  // TextEditingController central_department = TextEditingController();
+  // TextEditingController psu_designation = TextEditingController();
+  // TextEditingController psu_department = TextEditingController();
+  // TextEditingController statejob_role = TextEditingController();
+  // TextEditingController statejob_department = TextEditingController();
   
-  
+  TextEditingController job_designation_gov = TextEditingController();
+  TextEditingController job_department_gov = TextEditingController();
 
   // Employment Dropdown Variables
   String? _selectedJobType;
@@ -68,6 +69,60 @@ class _CoustmerState extends State<Coustmer> {
     super.initState();
     datecontroller.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
     timecontroller.text = DateFormat('HH:mm:ss').format(DateTime.now());
+  }
+  Future<void> fetchdata()async{
+       final  SharedPreferences prefs = await SharedPreferences.getInstance();
+       final String? action = prefs.getString('apikey');
+       
+    try{
+     const url = '10.100.13.138:8099/api/customer_form';
+     final responsee = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json', // Required for JSON-RPC requests
+        },
+        body: jsonEncode({
+          
+          'params': {
+           "token": action,
+    "agent_name": agency,
+    // "agent_login": "johndoe",
+    // "unit_name": "Sales Unit 1",
+    "date": datecontroller,
+    "time": timecontroller,
+    "family_head_name": familyhead,
+    "father_name": fathersname,
+    "mother_name": mothername,
+    "spouse_name":spousename,
+    "house_number":hno,
+    "street_number": streetnumber,
+    "city":city,
+    "pin_code": pincode,
+    "address": adddress,
+    "mobile_number": mobile,
+    "eenadu_newspaper": _isYes,
+    "feedback_to_improve_eenadu_paper": feedback_to_improve,
+    "read_newspaper":_isAnotherToggle ,
+    "current_newspaper": current_newspaper,
+    "reason_for_not_taking_eenadu_newsPaper": reason_for_not_taking_eenadu,
+    "reason_not_reading": reason_for_not_reading,
+    "free_offer_15_days": _isofferTogle,
+    "reason_not_taking_offer": reason_for_not_taking_offer,
+    "employed": _isemployed,
+    "job_type": jobTypes,
+    "job_type_one": govDepartments,
+    "job_profession": job_designation_gov,
+    "job_designation": job_department_gov,
+    "company_name":privateCompanyController,
+    "profession": privatePositionController,
+    // "job_designation_one": "Lead Developer",
+    "latitude": "40.7128",
+    "longitude": "-74.0060"
+          }
+        }),
+      );
+
+    }
   }
 
   @override
@@ -165,7 +220,7 @@ class _CoustmerState extends State<Coustmer> {
                     ),
                     Expanded(
                         child: textformfeild(
-                            controller: streetnumber,
+                            controller: pincode,
                             label: "pincode",
                             keyboardType: TextInputType.number)),
                   ],
@@ -193,13 +248,13 @@ class _CoustmerState extends State<Coustmer> {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold)),
                     ),
-                            
                     Expanded(
                       child: Text(_isYes ? "Yes" : "No",
                           style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                             color: _isYes ? Colors.green : Colors.red,)),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: _isYes ? Colors.green : Colors.red,
+                          )),
                     ),
                     Switch(
                       inactiveThumbColor: Colors.white,
@@ -233,14 +288,16 @@ class _CoustmerState extends State<Coustmer> {
                       Expanded(
                         child: Text(_isAnotherToggle ? "Yes" : "No",
                             style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                             color:  _isAnotherToggle ? Colors.green : Colors.red,)),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  _isAnotherToggle ? Colors.green : Colors.red,
+                            )),
                       ),
                       Switch(
-                           inactiveThumbColor: Colors.white,
-                      activeTrackColor: Colors.green,
-                      inactiveTrackColor: Colors.red,
+                        inactiveThumbColor: Colors.white,
+                        activeTrackColor: Colors.green,
+                        inactiveTrackColor: Colors.red,
                         value: _isAnotherToggle,
                         onChanged: (value) {
                           setState(() {
@@ -252,7 +309,8 @@ class _CoustmerState extends State<Coustmer> {
                   ),
                   if (_isAnotherToggle)
                     textformfeild(
-                        controller: current_newspaper, label: "Current Newspaper"),
+                        controller: current_newspaper,
+                        label: "Current Newspaper"),
                   if (_isAnotherToggle)
                     textformfeild(
                         controller: reason_for_not_taking_eenadu,
@@ -261,37 +319,43 @@ class _CoustmerState extends State<Coustmer> {
                     textformfeild(
                         controller: reason_for_not_reading,
                         label: "Reason for not Reading Newspaper"),
-                          Row(
-                  children: [
-                    const Expanded(
-                      child: Text("15 days  free Eenadu   offer:",
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Text("15 days  free Eenadu   offer:",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                      ),
+                      Text(_isofferTogle ? "Yes" : "No",
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
-                    ),
-                    Text(_isofferTogle ? "Yes" : "No",
-                        style:TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: _isofferTogle ? Colors.green : Colors.red,)),
-                    Switch(
-                       inactiveThumbColor: Colors.white,
-                      activeTrackColor: Colors.green,
-                      inactiveTrackColor: Colors.red,
-                      value: _isofferTogle,
-                      onChanged: (value) {
-                        setState(() {
-                          _isofferTogle = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                if(!_isofferTogle)
-                textformfeild(controller:reason_for_not_taking_offer , label: "reason for not taking offer"),
-                 const SizedBox(height: 15,),
+                            color: _isofferTogle ? Colors.green : Colors.red,
+                          )),
+                      Switch(
+                        inactiveThumbColor: Colors.white,
+                        activeTrackColor: Colors.green,
+                        inactiveTrackColor: Colors.red,
+                        value: _isofferTogle,
+                        onChanged: (value) {
+                          setState(() {
+                            _isofferTogle = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  if (!_isofferTogle)
+                    textformfeild(
+                        controller: reason_for_not_taking_offer,
+                        label: "reason for not taking offer"),
+                  const SizedBox(
+                    height: 15,
+                  ),
                 ],
-                const SizedBox(height: 15,),
-              
+                const SizedBox(
+                  height: 15,
+                ),
 
                 // Employment Status Toggle
                 Row(
@@ -303,10 +367,11 @@ class _CoustmerState extends State<Coustmer> {
                     ),
                     Expanded(
                       child: Text(_isemployed ? "Yes" : "No",
-                          style:  TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                             color: _isemployed ? Colors.green : Colors.red,)),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: _isemployed ? Colors.green : Colors.red,
+                          )),
                     ),
                     Switch(
                       inactiveThumbColor: Colors.white,
@@ -326,8 +391,9 @@ class _CoustmerState extends State<Coustmer> {
                     ),
                   ],
                 ),
-                 const SizedBox(height: 15,),
-
+                const SizedBox(
+                  height: 15,
+                ),
 
                 if (_isemployed)
                   DropdownButtonFormField<String>(
@@ -355,9 +421,10 @@ class _CoustmerState extends State<Coustmer> {
                     ),
                   ),
 
-
                 if (_selectedJobType == "Government") ...[
-                  const SizedBox(height: 20,),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   DropdownButtonFormField<String>(
                     value: _selectedGovDepartment,
                     hint: const Text("Select Department"),
@@ -382,34 +449,45 @@ class _CoustmerState extends State<Coustmer> {
 
                   // Show additional fields based on selection
                   if (_selectedGovDepartment == "Central job") ...[
-                     const SizedBox(height: 10,),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     textformfeild(
-                        controller: central_designation,
+                        controller: job_designation_gov,
                         label: "Central Job Designation"),
-                        const SizedBox(height: 10,),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     textformfeild(
-                        controller: central_designation,
+                        controller: job_department_gov,
                         label: "Central Job Department"),
                   ],
 
                   if (_selectedGovDepartment == "PSU") ...[
-                     const SizedBox(height: 10,),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     textformfeild(
-                        controller: psu_department,
+                        controller: job_designation_gov,
                         label: "PSU Organization Name"),
-                        const SizedBox(height: 10,),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     textformfeild(
-                        controller: psu_designation, label: "PSU Role"),
+                        controller: job_department_gov, label: "PSU Role"),
                   ],
 
                   if (_selectedGovDepartment == "State job") ...[
-                     const SizedBox(height: 10,),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     textformfeild(
-                        controller: statejob_role,
-                        label: "State Job Role"),
-                         const SizedBox(height: 10,),
+                        controller: job_designation_gov, label: "State Job Role"),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     textformfeild(
-                        controller: statejob_department,
+                        controller: job_department_gov,
                         label: "State Job Department"),
                   ],
                 ],
@@ -417,7 +495,9 @@ class _CoustmerState extends State<Coustmer> {
 // Private job details
 
                 if (_selectedJobType == "Private job") ...[
-                  const SizedBox(height: 10,),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   textformfeild(
                       controller: privateCompanyController,
                       label: "Company Name"),
@@ -450,9 +530,14 @@ class _CoustmerState extends State<Coustmer> {
                     ),
                   ),
 
-                  TextButton(onPressed: (){
-
-                  }, child: const Center(child: Text("submit Form",style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),)))
+                TextButton(
+                    onPressed: () {},
+                    child: const Center(
+                        child: Text(
+                      "submit Form",
+                      style:
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    )))
               ],
             ),
           ),
