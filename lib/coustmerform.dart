@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:salesrep/coustmermodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Coustmer extends StatefulWidget {
@@ -63,6 +64,7 @@ class _CoustmerState extends State<Coustmer> {
   ];
   String? _selectedproffesion;
   List<String> proffesion = ["farmer", "doctor", "teacher", "lawyer", "Artist"];
+   cousmerform ?data;
 
   @override
   void initState() {
@@ -70,12 +72,13 @@ class _CoustmerState extends State<Coustmer> {
     datecontroller.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
     timecontroller.text = DateFormat('HH:mm:ss').format(DateTime.now());
   }
-  Future<void> fetchdata()async{
+  Future<void> uploaddata()async{
        final  SharedPreferences prefs = await SharedPreferences.getInstance();
-       final String? action = prefs.getString('apikey');
+       final String? action =await prefs.getString('apikey');
+       print("Rrddddddddddddddddddddd$action");
        
     try{
-     const url = '10.100.13.138:8099/api/customer_form';
+     const url = 'http://10.100.13.138:8099/api/customer_form';
      final responsee = await http.post(
         Uri.parse(url),
         headers: {
@@ -84,44 +87,83 @@ class _CoustmerState extends State<Coustmer> {
         body: jsonEncode({
           
           'params': {
-           "token": action,
-    "agent_name": agency,
+           "token": action.toString(),
+    "agent_name": agency.text,
     // "agent_login": "johndoe",
     // "unit_name": "Sales Unit 1",
-    "date": datecontroller,
-    "time": timecontroller,
-    "family_head_name": familyhead,
-    "father_name": fathersname,
-    "mother_name": mothername,
-    "spouse_name":spousename,
-    "house_number":hno,
-    "street_number": streetnumber,
-    "city":city,
-    "pin_code": pincode,
-    "address": adddress,
-    "mobile_number": mobile,
+    "date": datecontroller.text,
+    "time": timecontroller.text,
+    "family_head_name": familyhead.text,
+    "father_name": fathersname.text,
+    "mother_name": mothername.text,
+    "spouse_name":spousename.text,
+    "house_number":hno.text,
+    "street_number": streetnumber.text,
+    "city":city.text,
+    "pin_code": pincode.text,
+    "address": adddress.text,
+    "mobile_number": mobile.text,
     "eenadu_newspaper": _isYes,
-    "feedback_to_improve_eenadu_paper": feedback_to_improve,
+    "feedback_to_improve_eenadu_paper": feedback_to_improve.text,
     "read_newspaper":_isAnotherToggle ,
-    "current_newspaper": current_newspaper,
-    "reason_for_not_taking_eenadu_newsPaper": reason_for_not_taking_eenadu,
-    "reason_not_reading": reason_for_not_reading,
+    "current_newspaper": current_newspaper.text,
+    "reason_for_not_taking_eenadu_newsPaper": reason_for_not_taking_eenadu.text,
+    "reason_not_reading": reason_for_not_reading.text,
     "free_offer_15_days": _isofferTogle,
-    "reason_not_taking_offer": reason_for_not_taking_offer,
+    "reason_not_taking_offer": reason_for_not_taking_offer.text,
     "employed": _isemployed,
-    "job_type": jobTypes,
-    "job_type_one": govDepartments,
-    "job_profession": job_designation_gov,
-    "job_designation": job_department_gov,
-    "company_name":privateCompanyController,
-    "profession": privatePositionController,
+    "job_type": _selectedJobType,
+    "job_type_one": _selectedGovDepartment,
+    "job_profession": job_designation_gov.text,
+    "job_designation": job_department_gov.text,
+    "company_name":privateCompanyController.text,
+    "profession": privatePositionController.text,
     // "job_designation_one": "Lead Developer",
     "latitude": "40.7128",
     "longitude": "-74.0060"
           }
         }),
       );
+       if (responsee.statusCode == 200){
+        final jsonResponse = jsonDecode(responsee.body) as Map<String, dynamic>;
+          data = cousmerform.fromJson(jsonResponse);
+          print("${responsee.statusCode}");
+          print("${data?.result?.code}");
+       
+        if(data?.result?.code=="200")
+        {
+          
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Data added succesfully")),
+          );
+            
+          // print("${jsonResponse.toString()}");
+        
+          // print("2");
+          // await prefs.setString('apikey', _loginData!.result!.apiKey.toString());
+          // print("3");
 
+          // final String? action = prefs.getString('apikey');
+          // print(" API KEY => $action");
+          // print("4444444444444444444444444444444$_loginData");
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => const Homescreen()),
+          // );
+
+        } 
+        else{
+          
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Data  Not added ")),
+          );
+        }
+       }
+      
+
+    }
+    catch(error){
+      print("Error fetching data: $error");
     }
   }
 
@@ -531,7 +573,10 @@ class _CoustmerState extends State<Coustmer> {
                   ),
 
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      uploaddata();
+
+                    },
                     child: const Center(
                         child: Text(
                       "submit Form",
