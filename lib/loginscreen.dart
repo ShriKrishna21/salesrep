@@ -30,6 +30,7 @@ class _LoginscreenState extends State<Loginscreen> {
 
   Future<void> fetchAlbum() async {
     final  SharedPreferences prefs = await SharedPreferences.getInstance();
+
     try {
       const url = 'http://10.100.13.138:8099/web/session/authenticate';
 
@@ -61,6 +62,7 @@ class _LoginscreenState extends State<Loginscreen> {
         
           print("2");
           await prefs.setString('apikey', _loginData!.result!.apiKey.toString());
+          print("ttttttttttttttttttttttttttttt${ _loginData!.result!.apiKey.toString()}");
           print("3");
 
           final String? action = prefs.getString('apikey');
