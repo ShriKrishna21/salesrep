@@ -46,7 +46,7 @@ class _CoustmerState extends State<Coustmer> {
   // TextEditingController psu_department = TextEditingController();
   // TextEditingController statejob_role = TextEditingController();
   // TextEditingController statejob_department = TextEditingController();
-  
+
   TextEditingController job_designation_gov = TextEditingController();
   TextEditingController job_department_gov = TextEditingController();
 
@@ -56,6 +56,7 @@ class _CoustmerState extends State<Coustmer> {
   TextEditingController privateCompanyController = TextEditingController();
   TextEditingController privatePositionController = TextEditingController();
 
+  String agents = '';
   List<String> jobTypes = ["Government", "Private job"];
   List<String> govDepartments = [
     "Central job",
@@ -64,81 +65,95 @@ class _CoustmerState extends State<Coustmer> {
   ];
   String? _selectedproffesion;
   List<String> proffesion = ["farmer", "doctor", "teacher", "lawyer", "Artist"];
-   cousmerform ?data;
+  cousmerform? data ;
 
   @override
   void initState() {
     super.initState();
     datecontroller.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    timecontroller.text = DateFormat('HH:mm:ss').format(DateTime.now());
+    timecontroller.text = DateFormat('hh:mm a').format(DateTime.now());
+    _loadSavedData();
   }
-  Future<void> uploaddata()async{
-       final  SharedPreferences prefs = await SharedPreferences.getInstance();
-       final String? action =await prefs.getString('apikey');
-       print("Rrddddddddddddddddddddd$action");
-       
-    try{
-     const url = 'http://10.100.13.138:8099/api/customer_form';
-     final responsee = await http.post(
+
+  void _loadSavedData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      agents = prefs.getString('unit') ?? '';
+      agency.text = agents; // Set it in the controller too
+    });
+  }
+
+  Future<void> uploaddata() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? action = await prefs.getString('apikey');
+    final String? agencyname = await prefs.getString('unit');
+    print("Rrddddddddddddddddddddd$action");
+
+    try {
+      const url = 'http://10.100.13.138:8099/api/customer_form';
+      final responsee = await http.post(
         Uri.parse(url),
         headers: {
           'Content-Type': 'application/json', // Required for JSON-RPC requests
         },
         body: jsonEncode({
-          
           'params': {
-           "token": action.toString(),
-    "agent_name": agency.text,
-    // "agent_login": "johndoe",
-    // "unit_name": "Sales Unit 1",
-    "date": datecontroller.text,
-    "time": timecontroller.text,
-    "family_head_name": familyhead.text,
-    "father_name": fathersname.text,
-    "mother_name": mothername.text,
-    "spouse_name":spousename.text,
-    "house_number":hno.text,
-    "street_number": streetnumber.text,
-    "city":city.text,
-    "pin_code": pincode.text,
-    "address": adddress.text,
-    "mobile_number": mobile.text,
-    "eenadu_newspaper": _isYes,
-    "feedback_to_improve_eenadu_paper": feedback_to_improve.text,
-    "read_newspaper":_isAnotherToggle ,
-    "current_newspaper": current_newspaper.text,
-    "reason_for_not_taking_eenadu_newsPaper": reason_for_not_taking_eenadu.text,
-    "reason_not_reading": reason_for_not_reading.text,
-    "free_offer_15_days": _isofferTogle,
-    "reason_not_taking_offer": reason_for_not_taking_offer.text,
-    "employed": _isemployed,
-    "job_type": _selectedJobType,
-    "job_type_one": _selectedGovDepartment,
-    "job_profession": job_designation_gov.text,
-    "job_designation": job_department_gov.text,
-    "company_name":privateCompanyController.text,
-    "profession": privatePositionController.text,
-    // "job_designation_one": "Lead Developer",
-    "latitude": "40.7128",
-    "longitude": "-74.0060"
+            "token": action.toString(),
+            "agent_name": agencyname.toString(),
+            // "agent_login": "johndoe",
+            // "unit_name": "Sales Unit 1",
+            "date": datecontroller.text,
+            "time": timecontroller.text,
+            "family_head_name": familyhead.text,
+            "father_name": fathersname.text,
+            "mother_name": mothername.text,
+            "spouse_name": spousename.text,
+            "house_number": hno.text,
+            "street_number": streetnumber.text,
+            "city": city.text,
+            "pin_code": pincode.text,
+            "address": adddress.text,
+            "mobile_number": mobile.text,
+            "eenadu_newspaper": _isYes,
+            "feedback_to_improve_eenadu_paper": feedback_to_improve.text,
+            "read_newspaper": _isAnotherToggle,
+            "current_newspaper": current_newspaper.text,
+            "reason_for_not_taking_eenadu_newsPaper":
+                reason_for_not_taking_eenadu.text,
+            "reason_not_reading": reason_for_not_reading.text,
+            "free_offer_15_days": _isofferTogle,
+            "reason_not_taking_offer": reason_for_not_taking_offer.text,
+            "employed": _isemployed,
+            "job_type": _selectedJobType,
+            "job_type_one": _selectedGovDepartment,
+            "job_profession": job_designation_gov.text,
+            "job_designation": job_department_gov.text,
+            "company_name": privateCompanyController.text,
+            "profession": privatePositionController.text,
+            // "job_designation_one": "Lead Developer",
+            "latitude": "40.7128",
+            "longitude": "-74.0060"
           }
         }),
       );
-       if (responsee.statusCode == 200){
-        final jsonResponse = jsonDecode(responsee.body) as Map<String, dynamic>;
-          data = cousmerform.fromJson(jsonResponse);
-          print("${responsee.statusCode}");
-          print("${data?.result?.code}");
-       
-        if(data?.result?.code=="200")
-        {
-          
-        ScaffoldMessenger.of(context).showSnackBar(
+      if (responsee.statusCode == 200) {
+        print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwww${responsee.statusCode}");
+           final jsonResponse = jsonDecode(responsee.body) as Map<String, dynamic>;
+           setState(() {
+             data=cousmerform.fromJson(jsonResponse);
+             print("ttttttttttttttttttttttttttttttttttt${data?.toJson().toString()}");
+           });
+
+        if (data?.result?.code == "200") {
+
+         
+      
+          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Data added succesfully")),
           );
-            
+
           // print("${jsonResponse.toString()}");
-        
+
           // print("2");
           // await prefs.setString('apikey', _loginData!.result!.apiKey.toString());
           // print("3");
@@ -150,19 +165,13 @@ class _CoustmerState extends State<Coustmer> {
           //   context,
           //   MaterialPageRoute(builder: (context) => const Homescreen()),
           // );
-
-        } 
-        else{
-          
-        ScaffoldMessenger.of(context).showSnackBar(
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Data  Not added ")),
           );
         }
-       }
-      
-
-    }
-    catch(error){
+      }
+    } catch (error) {
       print("Error fetching data: $error");
     }
   }
@@ -171,11 +180,11 @@ class _CoustmerState extends State<Coustmer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
         backgroundColor: Colors.blue,
         title: const Text(
           "Customer Form",
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
         ),
       ),
       body: Padding(
@@ -186,7 +195,8 @@ class _CoustmerState extends State<Coustmer> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                textformfeild(controller: agency, label: "Agency Name"),
+                textformfeild(
+                    controller: agency, label: "Agency Name", need: true),
                 const SizedBox(height: 20),
 
                 // Date & Time Fields
@@ -194,6 +204,7 @@ class _CoustmerState extends State<Coustmer> {
                   children: [
                     Expanded(
                         child: date(
+                            needed: true,
                             Dcontroller: datecontroller,
                             date: "Date",
                             inputType: TextInputType.datetime)),
@@ -202,6 +213,7 @@ class _CoustmerState extends State<Coustmer> {
                     ),
                     Expanded(
                         child: date(
+                            needed: true,
                             Dcontroller: timecontroller,
                             date: "Time",
                             inputType: TextInputType.datetime)),
@@ -262,7 +274,9 @@ class _CoustmerState extends State<Coustmer> {
                     ),
                     Expanded(
                         child: textformfeild(
+                            maxvalue: 6,
                             controller: pincode,
+                            textForCounter: "",
                             label: "pincode",
                             keyboardType: TextInputType.number)),
                   ],
@@ -272,6 +286,7 @@ class _CoustmerState extends State<Coustmer> {
                 const SizedBox(height: 10),
                 textformfeild(
                     controller: mobile,
+                    maxvalue: 10,
                     label: "mobile number",
                     keyboardType: TextInputType.phone),
 
@@ -290,14 +305,12 @@ class _CoustmerState extends State<Coustmer> {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold)),
                     ),
-                    Expanded(
-                      child: Text(_isYes ? "Yes" : "No",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: _isYes ? Colors.green : Colors.red,
-                          )),
-                    ),
+                    Text(_isYes ? "Yes" : "No",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: _isYes ? Colors.green : Colors.red,
+                        )),
                     Switch(
                       inactiveThumbColor: Colors.white,
                       activeTrackColor: Colors.green,
@@ -327,15 +340,12 @@ class _CoustmerState extends State<Coustmer> {
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold)),
                       ),
-                      Expanded(
-                        child: Text(_isAnotherToggle ? "Yes" : "No",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  _isAnotherToggle ? Colors.green : Colors.red,
-                            )),
-                      ),
+                      Text(_isAnotherToggle ? "Yes" : "No",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: _isAnotherToggle ? Colors.green : Colors.red,
+                          )),
                       Switch(
                         inactiveThumbColor: Colors.white,
                         activeTrackColor: Colors.green,
@@ -407,14 +417,12 @@ class _CoustmerState extends State<Coustmer> {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold)),
                     ),
-                    Expanded(
-                      child: Text(_isemployed ? "Yes" : "No",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: _isemployed ? Colors.green : Colors.red,
-                          )),
-                    ),
+                    Text(_isemployed ? "Yes" : "No",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: _isemployed ? Colors.green : Colors.red,
+                        )),
                     Switch(
                       inactiveThumbColor: Colors.white,
                       activeTrackColor: Colors.green,
@@ -524,7 +532,8 @@ class _CoustmerState extends State<Coustmer> {
                       height: 10,
                     ),
                     textformfeild(
-                        controller: job_designation_gov, label: "State Job Role"),
+                        controller: job_designation_gov,
+                        label: "State Job Role"),
                     const SizedBox(
                       height: 10,
                     ),
@@ -571,18 +580,32 @@ class _CoustmerState extends State<Coustmer> {
                           borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
+                  SizedBox(
+                    height: 20,
+                  ),
 
-                TextButton(
-                    onPressed: () {
-                      uploaddata();
-
-                    },
-                    child: const Center(
-                        child: Text(
-                      "submit Form",
-                      style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                    )))
+                Center(
+                  child: GestureDetector(
+              onTap: () async => {
+                 if (_formKey.currentState?.validate() ?? false) {
+                        await uploaddata(),
+                      }
+                
+                
+              },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                    
+                        borderRadius: BorderRadius.all(Radius.circular(50))
+                      ),
+                      
+                      height: MediaQuery.of(context).size.height/18,
+                      width:MediaQuery.of(context).size.height/5,
+                      child: Center(child: Text("Submit Form",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: MediaQuery.of(context).size.height/45),)),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
@@ -591,19 +614,29 @@ class _CoustmerState extends State<Coustmer> {
     );
   }
 }
+    //  ElevatedButton(
+    //                 onPressed: () async {
+                     
+    //                 },
+    //                 child: const Center(
+    //                     child: Text(
+    //                   "submit Form",
+    //                   style:
+    //                       TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+    //                 )))
 
 SizedBox date(
     {required TextEditingController Dcontroller,
     required String date,
+    needed = false,
     required TextInputType inputType}) {
   return SizedBox(
     height: 50,
     width: 180,
     child: TextFormField(
       keyboardType: inputType,
-
       controller: Dcontroller,
-      // readOnly: true,
+      readOnly: needed,
       decoration: InputDecoration(
           labelText: date,
           focusedBorder: OutlineInputBorder(
@@ -626,7 +659,12 @@ SizedBox address({
     // width: 180,
     child: TextFormField(
       keyboardType: TextInputType.number,
-
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Username cannot be empty";
+        }
+        return null;
+      },
       controller: address,
       // readOnly: true,
       decoration: InputDecoration(
@@ -644,14 +682,26 @@ SizedBox address({
 SizedBox textformfeild(
     {required TextEditingController controller,
     required String label,
+    String? textForCounter,
+    int? maxvalue,
+    need = false,
     keyboardType = TextInputType.text}) {
   return SizedBox(
-    height: 50,
+    height: label == "mobile number" ? 85 : 70,
     width: double.infinity,
     child: TextFormField(
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Username cannot be empty";
+        }
+        return null;
+      },
+      readOnly: need,
       keyboardType: keyboardType,
       controller: controller,
+      maxLength: maxvalue,
       decoration: InputDecoration(
+          counterText: textForCounter,
           labelText: label,
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
