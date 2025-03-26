@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:salesrep/homescreen.dart';
 import 'package:salesrep/loginscreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
+  runApp(MyApp(isLoggedIn: isLoggedIn));
 }
+
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Loginscreen(),
+      home: isLoggedIn ?  Homescreen() :  Loginscreen(),
     );
   }
 }

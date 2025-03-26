@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:salesrep/homescreen.dart';
+import 'package:salesrep/unit_manager_dashboard.dart';
 import 'package:salesrep/utils/colors.dart';
-import 'package:salesrep/utils/login.dart';
+
+import 'package:salesrep/utils/login_model..dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Loginscreen extends StatefulWidget {
@@ -29,7 +31,7 @@ class _LoginscreenState extends State<Loginscreen> {
   }
 
   Future<void> fetchAlbum() async {
-    final  SharedPreferences prefs = await SharedPreferences.getInstance();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     try {
       const url = 'http://10.100.13.138:8099/web/session/authenticate';
@@ -59,10 +61,15 @@ class _LoginscreenState extends State<Loginscreen> {
         print(" result code => ${_loginData!.result!.code}");
         if (_loginData!.result!.code == "200") {
           print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        
+
           print("2");
-          await prefs.setString('apikey', _loginData!.result!.apiKey.toString());
-          print("ttttttttttttttttttttttttttttt${ _loginData!.result!.apiKey.toString()}");
+          await prefs.setString(
+              'apikey', _loginData!.result!.apiKey.toString());
+          await prefs.setString('unit', _loginData!.result!.unit.toString());
+          print(
+              "oooooooooooooooooooooooo ${_loginData!.result!.unit.toString()}");
+          print(
+              "ttttttttttttttttttttttttttttt${_loginData!.result!.apiKey.toString()}");
           print("3");
 
           final String? action = prefs.getString('apikey');
@@ -107,12 +114,12 @@ class _LoginscreenState extends State<Loginscreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
-                  const BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    spreadRadius: 2,
-                    offset: const Offset(0, 5),
-                  ),
+                  // const BoxShadow(
+                  //   color: Colors.black26,
+                  //   blurRadius: 10,
+                  //   spreadRadius: 2,
+                  //   offset: const Offset(0, 5),
+                  // ),
                 ],
               ),
               width: MediaQuery.of(context).size.width * 0.75,
@@ -183,6 +190,9 @@ class _LoginscreenState extends State<Loginscreen> {
                       onPressed: () async {
                         //   fetchAlbum();
                         if (_formKey.currentState?.validate() ?? false) {
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          await prefs.setBool('isLoggedIn', true);
                           await fetchAlbum();
                         }
                       },
@@ -195,6 +205,9 @@ class _LoginscreenState extends State<Loginscreen> {
                         ),
                       ),
                     ),
+                    ElevatedButton(onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => UnitManagerDashboard(),));
+                    }, child: Text("unit manager"))
                   ],
                 ),
               ),
