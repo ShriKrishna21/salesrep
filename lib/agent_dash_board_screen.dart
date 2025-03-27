@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:salesrep/agent_logout.dart';
 import 'package:salesrep/coustmerform.dart';
 import 'package:salesrep/coustmermodel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AgentDashBoardScreen extends StatefulWidget {
   const AgentDashBoardScreen({super.key});
@@ -13,14 +14,29 @@ class AgentDashBoardScreen extends StatefulWidget {
 
 class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
   TextEditingController dateController = TextEditingController();
+  int getcount = 0;
+  int getofferinterestedpeople = 0;
+  int getoffernotinterestedpeople = 0;
 
   @override
   void initState() {
     super.initState();
     getCurrentDateTime();
+    getCount();
 
     // getCurrentLocation();
     // fetchAlbum();
+  }
+
+  Future<void> getCount() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      getcount = prefs.getInt("count") ?? 0;
+      getofferinterestedpeople=prefs.getInt("interetedoffer")??0;
+      getoffernotinterestedpeople=prefs.getInt("notinrested")??0;
+      print("111111111111111111111111${getcount}");
+    });
   }
 
   void getCurrentDateTime() {
@@ -35,23 +51,30 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
         toolbarHeight: MediaQuery.of(context).size.height / 12,
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         actions: [
-         GestureDetector(
-  onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => AgentLogout(),));
-            },
-          child: Icon(Icons.person ,size:  MediaQuery.of(context).size.height / 16,))
+          GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AgentLogout(),
+                    ));
+              },
+              child: Icon(
+                Icons.person,
+                size: MediaQuery.of(context).size.height / 16,
+              ))
         ],
         centerTitle: true,
- 
-        title:  Text(
+        title: Text(
           "Sales Rep",
           style: TextStyle(
-                fontSize: MediaQuery.of(context).size.height / 30, fontWeight: FontWeight.w900, ),
+            fontSize: MediaQuery.of(context).size.height / 30,
+            fontWeight: FontWeight.w900,
+          ),
         ),
       ),
       drawer: Drawer(
@@ -59,9 +82,12 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Image(
-                image: AssetImage("assets/images/logo.jpg"),
-                fit: BoxFit.cover,
+              const SizedBox(
+                height: 100,
+                child: const Image(
+                  image: AssetImage("assets/images/logo.jpg"),
+                  fit: BoxFit.cover,
+                ),
               ),
               GestureDetector(
                 onTap: () {
@@ -89,7 +115,8 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (_)=> const Coustmer()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const Coustmer()));
         },
         label: const Text(
           "Customer Form",
@@ -188,9 +215,9 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                             border: Border(
                                 top: BorderSide(color: Colors.black, width: 2)),
                             color: Colors.lightGreenAccent),
-                        child: const Center(
+                        child: Center(
                             child: Text(
-                          "Today:0",
+                          "Today:$getcount ",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20),
                         )),
@@ -252,9 +279,9 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                             border: Border(
                                 top: BorderSide(color: Colors.black, width: 2)),
                             color: Colors.red),
-                        child: const Center(
+                        child: Center(
                           child: Text(
-                            "Today:40",
+                            "Today:${40 - getcount}",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20),
                           ),
@@ -403,27 +430,27 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                             border: Border(
                                 top: BorderSide(color: Colors.black, width: 2)),
                             color: Colors.orangeAccent),
-                        child: const Padding(
+                        child: Padding(
                           padding: EdgeInsets.only(left: 20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Already Subscribed            :    0",
+                                "Already Subscribed            :    $getcount",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
                                     color: Colors.white),
                               ),
                               Text(
-                                "15 Days Offer Accepted     :    0",
+                                "15 Days Offer Accepted     :    $getofferinterestedpeople",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
                                     color: Colors.white),
                               ),
                               Text(
-                                "15 Days Offer Rejected      :    0",
+                                "15 Days Offer Rejected      :    $getoffernotinterestedpeople",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,

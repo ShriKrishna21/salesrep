@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:salesrep/agent_dash_board_screen.dart';
 import 'package:salesrep/coustmermodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +18,12 @@ class _CoustmerState extends State<Coustmer> {
   bool _isAnotherToggle = false;
   bool _isofferTogle = false;
   bool _isemployed = false;
+  int offerintresetedpeople = 0;
+  int offernotintresetedpeople = 0;
+  int offerintresetedpeoplecount = 0;
+  int offernotintresetedpeoplecount = 0;
+  int count = 0;
+  int addcount = 0;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -65,11 +72,13 @@ class _CoustmerState extends State<Coustmer> {
   ];
   String? _selectedproffesion;
   List<String> proffesion = ["farmer", "doctor", "teacher", "lawyer", "Artist"];
-  cousmerform? data ;
+  cousmerform? data;
 
   @override
   void initState() {
     super.initState();
+    // final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     datecontroller.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
     timecontroller.text = DateFormat('hh:mm a').format(DateTime.now());
     _loadSavedData();
@@ -86,7 +95,7 @@ class _CoustmerState extends State<Coustmer> {
   Future<void> uploaddata() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? action = await prefs.getString('apikey');
-  
+
     print("Rrddddddddddddddddddddd$action");
 
     try {
@@ -138,16 +147,14 @@ class _CoustmerState extends State<Coustmer> {
       );
       if (responsee.statusCode == 200) {
         print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwww${responsee.statusCode}");
-           final jsonResponse = jsonDecode(responsee.body) as Map<String, dynamic>;
-           setState(() {
-             data=cousmerform.fromJson(jsonResponse);
-             print("ttttttttttttttttttttttttttttttttttt${data?.toJson().toString()}");
-           });
+        final jsonResponse = jsonDecode(responsee.body) as Map<String, dynamic>;
+        setState(() {
+          data = cousmerform.fromJson(jsonResponse);
+          print(
+              "ttttttttttttttttttttttttttttttttttt${data?.toJson().toString()}");
+        });
 
         if (data?.result?.code == "200") {
-
-         
-      
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Data added succesfully")),
           );
@@ -580,29 +587,51 @@ class _CoustmerState extends State<Coustmer> {
                           borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                SizedBox(
+                  height: 20,
+                ),
 
                 Center(
                   child: GestureDetector(
-              onTap: () async => {
-                 if (_formKey.currentState?.validate() ?? false) {
-                        await uploaddata(),
+                    onTap: () async {
+                      final SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                          // get the  count  first then increase the count 
+                      addcount = prefs.getInt("count") ?? 0;
+                      offerintresetedpeoplecount =
+                      //get offer detail
+                          prefs.getInt("interetedoffer") ?? 0;
+                      offernotintresetedpeoplecount =
+                          prefs.getInt("notinrested") ?? 0;
+
+                      _isofferTogle
+                          ? prefs.setInt(
+                              "interetedoffer", offerintresetedpeoplecount+ 1)
+                          : prefs.setInt(
+                              "notinrested", offernotintresetedpeoplecount + 1);
+                      print('222222222222222222222222222$addcount');
+                      prefs.setInt('count', addcount + 1);
+                      print(
+                          '2222222222222222222222222225555555555555555555555677888${prefs.getInt("count")}');
+                      if (_formKey.currentState?.validate() ?? false) {
+                        await uploaddata();
                       }
-                
-                
-              },
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AgentDashBoardScreen())); 
+                    },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.blue,
-                    
-                        borderRadius: BorderRadius.all(Radius.circular(50))
-                      ),
-                      
-                      height: MediaQuery.of(context).size.height/18,
-                      width:MediaQuery.of(context).size.height/5,
-                      child: Center(child: Text("Submit Form",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: MediaQuery.of(context).size.height/45),)),
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                      height: MediaQuery.of(context).size.height / 18,
+                      width: MediaQuery.of(context).size.height / 5,
+                      child: Center(
+                          child: Text(
+                        "Submit Form",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: MediaQuery.of(context).size.height / 45),
+                      )),
                     ),
                   ),
                 )
@@ -614,16 +643,16 @@ class _CoustmerState extends State<Coustmer> {
     );
   }
 }
-    //  ElevatedButton(
-    //                 onPressed: () async {
-                     
-    //                 },
-    //                 child: const Center(
-    //                     child: Text(
-    //                   "submit Form",
-    //                   style:
-    //                       TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-    //                 )))
+//  ElevatedButton(
+//                 onPressed: () async {
+
+//                 },
+//                 child: const Center(
+//                     child: Text(
+//                   "submit Form",
+//                   style:
+//                       TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+//                 )))
 
 SizedBox date(
     {required TextEditingController Dcontroller,
