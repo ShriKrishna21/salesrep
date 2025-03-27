@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:salesrep/agent_dash_board_screen.dart';
 import 'package:salesrep/homescreen.dart';
 import 'package:salesrep/loginscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: isLoggedIn ?  Homescreen() :  Loginscreen(),
+      home: isLoggedIn ?  AgentDashBoardScreen() :  Loginscreen(),
     );
   }
 }
