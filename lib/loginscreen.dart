@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:salesrep/agent_dash_board_screen.dart';
 import 'package:salesrep/homescreen.dart';
 import 'package:salesrep/unit_manager_dashboard.dart';
 import 'package:salesrep/utils/colors.dart';
@@ -66,7 +67,10 @@ class _LoginscreenState extends State<Loginscreen> {
           print("2");
           await prefs.setString(
               'apikey', _loginData!.result!.apiKey.toString());
+
           await prefs.setString('unit', _loginData!.result!.unit.toString());
+          await prefs.setString('role',_loginData!.result!.role.toString());
+          await prefs.setString('id',_loginData!.result!.role.toString());
           print(
               "oooooooooooooooooooooooo ${_loginData!.result!.unit.toString()}");
           print(
@@ -78,7 +82,7 @@ class _LoginscreenState extends State<Loginscreen> {
           print("4444444444444444444444444444444$_loginData");
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const Homescreen()),
+            MaterialPageRoute(builder: (context) => const AgentDashBoardScreen()),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

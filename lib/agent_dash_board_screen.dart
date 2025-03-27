@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:salesrep/agent_logout.dart';
 import 'package:salesrep/coustmerform.dart';
 import 'package:salesrep/coustmermodel.dart';
 
@@ -34,27 +35,23 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
+        toolbarHeight: MediaQuery.of(context).size.height / 12,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
         actions: [
-          CircleAvatar(
-            backgroundColor: Colors.white,
-            maxRadius: 50,
-             child:  Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-             
-              ),
-              child: IconButton(onPressed: (){}, icon: Icon(Icons.person)),
-            ),
-          ),
+         GestureDetector(
+  onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AgentLogout(),));
+            },
+          child: Icon(Icons.person ,size:  MediaQuery.of(context).size.height / 16,))
         ],
         centerTitle: true,
-        backgroundColor: Colors.blue,
-        title: const Text(
+ 
+        title:  Text(
           "Sales Rep",
           style: TextStyle(
-              fontSize: 25, fontWeight: FontWeight.w900, color: Colors.white),
+                fontSize: MediaQuery.of(context).size.height / 30, fontWeight: FontWeight.w900, ),
         ),
       ),
       drawer: Drawer(

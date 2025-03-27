@@ -86,7 +86,7 @@ class _CoustmerState extends State<Coustmer> {
   Future<void> uploaddata() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? action = await prefs.getString('apikey');
-    final String? agencyname = await prefs.getString('unit');
+  
     print("Rrddddddddddddddddddddd$action");
 
     try {
@@ -99,7 +99,7 @@ class _CoustmerState extends State<Coustmer> {
         body: jsonEncode({
           'params': {
             "token": action.toString(),
-            "agent_name": agencyname.toString(),
+            "agent_name": agents,
             // "agent_login": "johndoe",
             // "unit_name": "Sales Unit 1",
             "date": datecontroller.text,

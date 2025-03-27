@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:salesrep/agent_logout.dart';
 
 class UnitManagerDashboard extends StatefulWidget {
-  const UnitManagerDashboard({super.key});
+  const  UnitManagerDashboard({super.key});
 
   @override
   State<UnitManagerDashboard> createState() => _UnitManagerDashboardState();
@@ -16,9 +17,21 @@ class _UnitManagerDashboardState extends State<UnitManagerDashboard> {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         actions: [
-          Icon(
-            Icons.person,
-            size: MediaQuery.of(context).size.height / 16,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AgentLogout(),));
+            },
+            child: Container(
+              width: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(width: 2, color: Colors.white,style: BorderStyle.solid)
+              ),
+              child: Icon(
+                Icons.person,
+                size: MediaQuery.of(context).size.height / 16,
+              ),
+            ),
           )
         ],
         title: RichText(
