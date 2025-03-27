@@ -114,14 +114,14 @@ class _LoginscreenState extends State<Loginscreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
+              //  boxShadow:  [
                   // const BoxShadow(
                   //   color: Colors.black26,
                   //   blurRadius: 10,
                   //   spreadRadius: 2,
                   //   offset: const Offset(0, 5),
                   // ),
-                ],
+             //   ],
               ),
               width: MediaQuery.of(context).size.width * 0.75,
               height: MediaQuery.of(context).size.height * 0.6,
