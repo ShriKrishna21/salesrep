@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:salesrep/coustmerform.dart';
+import 'package:salesrep/coustmermodel.dart';
 
 class AgentDashBoardScreen extends StatefulWidget {
   const AgentDashBoardScreen({super.key});
@@ -35,7 +37,8 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
         actions: [
           CircleAvatar(
             backgroundColor: Colors.white,
-            child: Container(
+            maxRadius: 50,
+             child:  Container(
               height: 50,
               width: 50,
               decoration: BoxDecoration(
@@ -44,7 +47,6 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
               ),
               child: IconButton(onPressed: (){}, icon: Icon(Icons.person)),
             ),
-            maxRadius: 50,
           ),
         ],
         centerTitle: true,
@@ -90,7 +92,7 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          print("object");
+        Navigator.push(context, MaterialPageRoute(builder: (_)=> const Coustmer()));
         },
         label: const Text(
           "Customer Form",
