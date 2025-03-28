@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:salesrep/agent_logout.dart';
 import 'package:salesrep/coustmerform.dart';
-import 'package:salesrep/coustmermodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AgentDashBoardScreen extends StatefulWidget {
@@ -17,15 +16,13 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
   int getcount = 0;
   int getofferinterestedpeople = 0;
   int getoffernotinterestedpeople = 0;
+  int houseVisited = 0;
 
   @override
   void initState() {
     super.initState();
     getCurrentDateTime();
     getCount();
-
-    // getCurrentLocation();
-    // fetchAlbum();
   }
 
   Future<void> getCount() async {
@@ -33,9 +30,8 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
 
     setState(() {
       getcount = prefs.getInt("count") ?? 0;
-      getofferinterestedpeople=prefs.getInt("interetedoffer")??0;
-      getoffernotinterestedpeople=prefs.getInt("notinrested")??0;
-      print("111111111111111111111111${getcount}");
+      getofferinterestedpeople = prefs.getInt("interetedoffer") ?? 0;
+      getoffernotinterestedpeople = prefs.getInt("notinrested") ?? 0;
     });
   }
 
@@ -60,7 +56,7 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AgentLogout(),
+                      builder: (context) => const AgentLogout(),
                     ));
               },
               child: Icon(
@@ -84,15 +80,13 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
             children: [
               const SizedBox(
                 height: 100,
-                child: const Image(
+                child: Image(
                   image: AssetImage("assets/images/logo.jpg"),
                   fit: BoxFit.cover,
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  print("object");
-                },
+                onTap: () {},
                 child: Row(
                   children: [
                     IconButton(
@@ -192,7 +186,7 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                             color: Colors.white),
                         child: const Center(
                             child: Text(
-                          "House Visited",
+                          "HouseVisited",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20),
                         )),
@@ -218,7 +212,7 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                         child: Center(
                             child: Text(
                           "Today:$getcount ",
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20),
                         )),
                       ),
@@ -257,7 +251,7 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                             color: Colors.white),
                         child: const Center(
                             child: Text(
-                          "Target Left",
+                          "Target Left:",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20),
                         )),
@@ -282,7 +276,7 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                         child: Center(
                           child: Text(
                             "Today:${40 - getcount}",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20),
                           ),
                         ),
@@ -431,27 +425,27 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                                 top: BorderSide(color: Colors.black, width: 2)),
                             color: Colors.orangeAccent),
                         child: Padding(
-                          padding: EdgeInsets.only(left: 20),
+                          padding: const EdgeInsets.only(left: 20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 "Already Subscribed            :    $getcount",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
                                     color: Colors.white),
                               ),
                               Text(
                                 "15 Days Offer Accepted     :    $getofferinterestedpeople",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
                                     color: Colors.white),
                               ),
                               Text(
                                 "15 Days Offer Rejected      :    $getoffernotinterestedpeople",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
                                     color: Colors.white),

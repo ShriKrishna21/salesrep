@@ -72,7 +72,7 @@ class _CoustmerState extends State<Coustmer> {
   ];
   String? _selectedproffesion;
   List<String> proffesion = ["farmer", "doctor", "teacher", "lawyer", "Artist"];
-  cousmerform? data;
+  cousmerform? data ;
 
   @override
   void initState() {
@@ -147,17 +147,41 @@ class _CoustmerState extends State<Coustmer> {
       );
       if (responsee.statusCode == 200) {
         print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwww${responsee.statusCode}");
-        final jsonResponse = jsonDecode(responsee.body) as Map<String, dynamic>;
-        setState(() {
-          data = cousmerform.fromJson(jsonResponse);
-          print(
-              "ttttttttttttttttttttttttttttttttttt${data?.toJson().toString()}");
-        });
+           final jsonResponse = jsonDecode(responsee.body) as Map<String, dynamic>;
+           setState(() {
+             data=cousmerform.fromJson(jsonResponse);
+             print("ttttttttttttttttttttttttttttttttttt${data?.toJson().toString()}");
+           });
 
         if (data?.result?.code == "200") {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Data added succesfully")),
           );
+// Load current values from SharedPreferences
+          int houseVisited = prefs.getInt("house_visited") ?? 0;
+          int targetLeft = prefs.getInt("target_left") ?? 40;
+          int alreadySubscribed = prefs.getInt("already_Subscribed") ?? 0;
+          int offerAccepted = prefs.getInt("offer_Accepted") ?? 0;
+          int offerRejected = prefs.getInt("offer_Rejected") ?? 0;
+// Update values
+          houseVisited += 1; //Increment House Visited
+          targetLeft -= 1; //Decrease TargetLeft
+// Update Report Fields Based On Form Input
+          if (_isYes) {
+            alreadySubscribed += 1; // Customer already subscribed to Eenadu
+          } else if (_isofferTogle) {
+            offerAccepted += 1; // Customer accepted 15-day offer
+          } else {
+            offerRejected += 1; // Customer rejected 15-day offer
+          }
+// Save updated values to SharedPreferences
+
+          await prefs.setInt("house_visited", houseVisited);
+          await prefs.setInt("target_left", targetLeft);
+          await prefs.setInt("already_subscribed", alreadySubscribed);
+          await prefs.setInt("offer_accepted", offerAccepted);
+          await prefs.setInt("offer_rejected", offerRejected);
+// Navigate back to AgentDashBoardScreen to reflect changes
 
           // print("${jsonResponse.toString()}");
 
@@ -172,6 +196,7 @@ class _CoustmerState extends State<Coustmer> {
           //   context,
           //   MaterialPageRoute(builder: (context) => const Homescreen()),
           // );
+          Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Data  Not added ")),
@@ -587,51 +612,29 @@ class _CoustmerState extends State<Coustmer> {
                           borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
-                SizedBox(
-                  height: 20,
-                ),
+                  SizedBox(
+                    height: 20,
+                  ),
 
                 Center(
                   child: GestureDetector(
-                    onTap: () async {
-                      final SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                          // get the  count  first then increase the count 
-                      addcount = prefs.getInt("count") ?? 0;
-                      offerintresetedpeoplecount =
-                      //get offer detail
-                          prefs.getInt("interetedoffer") ?? 0;
-                      offernotintresetedpeoplecount =
-                          prefs.getInt("notinrested") ?? 0;
-
-                      _isofferTogle
-                          ? prefs.setInt(
-                              "interetedoffer", offerintresetedpeoplecount+ 1)
-                          : prefs.setInt(
-                              "notinrested", offernotintresetedpeoplecount + 1);
-                      print('222222222222222222222222222$addcount');
-                      prefs.setInt('count', addcount + 1);
-                      print(
-                          '2222222222222222222222222225555555555555555555555677888${prefs.getInt("count")}');
-                      if (_formKey.currentState?.validate() ?? false) {
-                        await uploaddata();
+              onTap: () async => {
+                 if (_formKey.currentState?.validate() ?? false) {
+                        await uploaddata(),
                       }
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AgentDashBoardScreen())); 
-                    },
+                
+                
+              },
                     child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.all(Radius.circular(50))),
-                      height: MediaQuery.of(context).size.height / 18,
-                      width: MediaQuery.of(context).size.height / 5,
-                      child: Center(
-                          child: Text(
-                        "Submit Form",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: MediaQuery.of(context).size.height / 45),
-                      )),
+                        color: Colors.blue,
+                    
+                        borderRadius: BorderRadius.all(Radius.circular(50))
+                      ),
+                      
+                      height: MediaQuery.of(context).size.height/18,
+                      width:MediaQuery.of(context).size.height/5,
+                      child: Center(child: Text("Submit Form",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: MediaQuery.of(context).size.height/45),)),
                     ),
                   ),
                 )
@@ -643,16 +646,16 @@ class _CoustmerState extends State<Coustmer> {
     );
   }
 }
-//  ElevatedButton(
-//                 onPressed: () async {
-
-//                 },
-//                 child: const Center(
-//                     child: Text(
-//                   "submit Form",
-//                   style:
-//                       TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-//                 )))
+    //  ElevatedButton(
+    //                 onPressed: () async {
+                     
+    //                 },
+    //                 child: const Center(
+    //                     child: Text(
+    //                   "submit Form",
+    //                   style:
+    //                       TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+    //                 )))
 
 SizedBox date(
     {required TextEditingController Dcontroller,
