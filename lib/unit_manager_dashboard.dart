@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:salesrep/agent_logout.dart';
+import 'package:salesrep/create_unit_manager.dart';
 
 class UnitManagerDashboard extends StatefulWidget {
   const  UnitManagerDashboard({super.key});
@@ -19,7 +20,7 @@ class _UnitManagerDashboardState extends State<UnitManagerDashboard> {
         actions: [
           GestureDetector(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => AgentLogout(),));
+              // Navigator.push(context, MaterialPageRoute(builder: (context) => AgentLogout(),));
             },
             child: Container(
               width: 50,
@@ -109,7 +110,9 @@ class _UnitManagerDashboardState extends State<UnitManagerDashboard> {
                 ),
                 elevation: 6,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CreateUnitManager(),));
+              },
               child: const Text(
                 "Create User",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,color: Colors.white),
