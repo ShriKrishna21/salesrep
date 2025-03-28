@@ -1,7 +1,8 @@
 class agentlogout {
   String? jsonrpc;
   Null? id;
-  Result? result;
+  Result? 
+  result;
 
   agentlogout({this.jsonrpc, this.id, this.result});
 
