@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -260,13 +261,13 @@ class _CoustmerState extends State<Coustmer> {
                         fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
                 textformfeild(
-                    controller: familyhead, label: "Family Head Name"),
+                    controller: familyhead, label: "Family Head Name",hunttext: "family head name cannot be empty"),
                 const SizedBox(height: 10),
-                textformfeild(controller: fathersname, label: "Father's Name"),
+                textformfeild(controller: fathersname, label: "Father's Name",hunttext:"fathers name cannot be empty" ),
                 const SizedBox(height: 10),
-                textformfeild(controller: mothername, label: "Mother's Name"),
+                textformfeild(controller: mothername, label: "Mother's Name",hunttext:"mothers name cannot be empty" ),
                 const SizedBox(height: 10),
-                textformfeild(controller: spousename, label: "Spouse Name"),
+                textformfeild(controller: spousename, label: "Spouse Name",hunttext:"spouse name cannot be empty "),
                 const SizedBox(height: 10),
 
                 const SizedBox(height: 15),
@@ -282,6 +283,7 @@ class _CoustmerState extends State<Coustmer> {
                         child: textformfeild(
                             controller: hno,
                             label: "House number",
+                            hunttext: "house number   cannot be empty",
                             keyboardType: TextInputType.text)),
                     const SizedBox(
                       width: 10,
@@ -289,6 +291,7 @@ class _CoustmerState extends State<Coustmer> {
                     Expanded(
                         child: textformfeild(
                             controller: streetnumber,
+                            hunttext: "street number cannot be empty",
                             label: "street number",
                             keyboardType: TextInputType.number)),
                   ],
@@ -298,6 +301,7 @@ class _CoustmerState extends State<Coustmer> {
                   children: [
                     Expanded(
                         child: textformfeild(
+                          hunttext: "city cannot be empty",
                             controller: city,
                             label: "city",
                             keyboardType: TextInputType.text)),
@@ -306,6 +310,7 @@ class _CoustmerState extends State<Coustmer> {
                     ),
                     Expanded(
                         child: textformfeild(
+                          hunttext: "pincode cannot be empty",
                             maxvalue: 6,
                             controller: pincode,
                             textForCounter: "",
@@ -317,6 +322,7 @@ class _CoustmerState extends State<Coustmer> {
                 textformfeild(controller: adddress, label: "Address"),
                 const SizedBox(height: 10),
                 textformfeild(
+                  hunttext: "mobile number cannot empty",
                     controller: mobile,
                     maxvalue: 10,
                     label: "mobile number",
@@ -324,6 +330,7 @@ class _CoustmerState extends State<Coustmer> {
 
                 const SizedBox(height: 15),
                 const Text("Newspaper Details",
+                
                     style: TextStyle(
                         color: Colors.blue,
                         fontSize: 18,
@@ -361,6 +368,7 @@ class _CoustmerState extends State<Coustmer> {
                 ),
                 if (_isYes)
                   textformfeild(
+                    hunttext: "feedback cannot be empty",
                       controller: feedback_to_improve,
                       label: "Feedback to improve Eenadu"),
 
@@ -393,14 +401,17 @@ class _CoustmerState extends State<Coustmer> {
                   ),
                   if (_isAnotherToggle)
                     textformfeild(
+                      hunttext:"current news paper cannot be empty",
                         controller: current_newspaper,
                         label: "Current Newspaper"),
                   if (_isAnotherToggle)
                     textformfeild(
+                      hunttext: "reason for not talking cannot be empty",
                         controller: reason_for_not_taking_eenadu,
                         label: "reason for not talking eenadu Newspaper"),
                   if (!_isAnotherToggle)
                     textformfeild(
+                      hunttext: "reason for not reading cannot be empty",
                         controller: reason_for_not_reading,
                         label: "Reason for not Reading Newspaper"),
                   Row(
@@ -431,6 +442,7 @@ class _CoustmerState extends State<Coustmer> {
                   ),
                   if (!_isofferTogle)
                     textformfeild(
+                      hunttext: "feild cannot be empty",
                         controller: reason_for_not_taking_offer,
                         label: "reason for not taking offer"),
                   const SizedBox(
@@ -535,12 +547,14 @@ class _CoustmerState extends State<Coustmer> {
                       height: 10,
                     ),
                     textformfeild(
+                      hunttext: "feild cannot be empty",
                         controller: job_designation_gov,
                         label: "Central Job Designation"),
                     const SizedBox(
                       height: 10,
                     ),
                     textformfeild(
+                         hunttext: "feild cannot be empty",
                         controller: job_department_gov,
                         label: "Central Job Department"),
                   ],
@@ -550,12 +564,14 @@ class _CoustmerState extends State<Coustmer> {
                       height: 10,
                     ),
                     textformfeild(
+                         hunttext: "feild cannot be empty",
                         controller: job_designation_gov,
                         label: "PSU Organization Name"),
                     const SizedBox(
                       height: 10,
                     ),
                     textformfeild(
+                         hunttext: "feild cannot be empty",
                         controller: job_department_gov, label: "PSU Role"),
                   ],
 
@@ -564,12 +580,14 @@ class _CoustmerState extends State<Coustmer> {
                       height: 10,
                     ),
                     textformfeild(
+                         hunttext: "feild cannot be empty",
                         controller: job_designation_gov,
                         label: "State Job Role"),
                     const SizedBox(
                       height: 10,
                     ),
                     textformfeild(
+                         hunttext: "feild cannot be empty",
                         controller: job_department_gov,
                         label: "State Job Department"),
                   ],
@@ -582,10 +600,12 @@ class _CoustmerState extends State<Coustmer> {
                     height: 10,
                   ),
                   textformfeild(
+                       hunttext: "feild cannot be empty",
                       controller: privateCompanyController,
                       label: "Company Name"),
                   const SizedBox(height: 10),
                   textformfeild(
+                       hunttext: "feild cannot be empty",
                       controller: privatePositionController, label: "Position"),
                 ],
 
@@ -620,6 +640,7 @@ class _CoustmerState extends State<Coustmer> {
                   child: GestureDetector(
               onTap: () async => {
                  if (_formKey.currentState?.validate() ?? false) {
+                  datasaved(),
                         await uploaddata(),
                       }
                 
@@ -645,7 +666,49 @@ class _CoustmerState extends State<Coustmer> {
       ),
     );
   }
+  
+datasaved() {
+  CollectionReference collref = FirebaseFirestore.instance.collection("survey");
+  collref.add({
+   "agent_name": agents,
+            // "agent_login": "johndoe",
+            // "unit_name": "Sales Unit 1",
+            "date": datecontroller.text,
+            "time": timecontroller.text,
+            "family_head_name": familyhead.text,
+            "father_name": fathersname.text,
+            "mother_name": mothername.text,
+            "spouse_name": spousename.text,
+            "house_number": hno.text,
+            "street_number": streetnumber.text,
+            "city": city.text,
+            "pin_code": pincode.text,
+            "address": adddress.text,
+            "mobile_number": mobile.text,
+            "eenadu_newspaper": _isYes,
+            "feedback_to_improve_eenadu_paper": feedback_to_improve.text,
+            "read_newspaper": _isAnotherToggle,
+            "current_newspaper": current_newspaper.text,
+            "reason_for_not_taking_eenadu_newsPaper":
+                reason_for_not_taking_eenadu.text,
+            "reason_not_reading": reason_for_not_reading.text,
+            "free_offer_15_days": _isofferTogle,
+            "reason_not_taking_offer": reason_for_not_taking_offer.text,
+            "employed": _isemployed,
+            "job_type": _selectedJobType,
+            "job_type_one": _selectedGovDepartment,
+            "job_profession": job_designation_gov.text,
+            "job_designation": job_department_gov.text,
+            "company_name": privateCompanyController.text,
+            "profession": privatePositionController.text,
+            // "job_designation_one": "Lead Developer",
+            "latitude": "40.7128",
+            "longitude": "-74.0060"
+
+  });
 }
+}
+
     //  ElevatedButton(
     //                 onPressed: () async {
                      
@@ -685,6 +748,7 @@ SizedBox address({
   required TextEditingController address,
   String? add,
   required TextInputType keyboardType,
+  String? hhinnttextt,
 }) {
   return SizedBox(
     height: 50,
@@ -693,7 +757,7 @@ SizedBox address({
       keyboardType: TextInputType.number,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return "Username cannot be empty";
+          return hhinnttextt;
         }
         return null;
       },
@@ -714,6 +778,7 @@ SizedBox address({
 SizedBox textformfeild(
     {required TextEditingController controller,
     required String label,
+    String? hunttext,
     String? textForCounter,
     int? maxvalue,
     need = false,
@@ -724,7 +789,7 @@ SizedBox textformfeild(
     child: TextFormField(
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return "Username cannot be empty";
+          return hunttext;
         }
         return null;
       },
