@@ -65,15 +65,12 @@ class _AgentLogoutState extends State<AgentLogout> {
       appBar: AppBar(
         backgroundColor: Color(0xFF4A90E2),
         title: Text('My Profile'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {},
-        ),
+        
       ),
       body: Column(
         children: [
-          SizedBox(height: 20),
-          Stack(
+       const   SizedBox(height: 20),
+         const Stack(
             alignment: Alignment.bottomRight,
             children: [
               CircleAvatar(
