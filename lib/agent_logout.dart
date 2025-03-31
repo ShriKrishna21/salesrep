@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'package:salesrep/UserLogoutModel.dart';
 import 'package:salesrep/loginscreen.dart';
 
-import 'agent_logout_model.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -17,7 +18,7 @@ class _AgentLogoutState extends State<AgentLogout> {
   String unitname = "";
   String jobrole = '';
   String userid = "";
-  agentlogout? logoutt;
+  userlogout? logoutt;
   Future<void> agentLogout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? apiKey = await prefs.getString('apikey');
@@ -38,7 +39,7 @@ class _AgentLogoutState extends State<AgentLogout> {
       if (respond.statusCode == 200) {
         final jsonResponse = jsonDecode(respond.body) as Map<String, dynamic>;
         setState(() {
-          logoutt = agentlogout.fromJson(jsonResponse);
+          logoutt = userlogout.fromJson(jsonResponse);
         });
 
         print(" hashhhhhhhhhhhhhhhhhhhhhhhhhhhhhh${respond.statusCode}");
@@ -107,10 +108,10 @@ class _AgentLogoutState extends State<AgentLogout> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                profileItem("Name", "Prashant"),
-                profileItem("User Name", "Prashant01@eenadu"),
-                profileItem("Job role", "Eenadu Agent"),
-                profileItem("unit name", "8827530290"),
+                profileitem(title: "Name", value: "Prashant"),
+                profileitem(title: "User Name", value: "Prashant01@eenadu"),
+                profileitem(title: "Job role", value: "Eenadu Agent"),
+                profileitem(title: "unit name", value: "8827530290"),
               ],
             ),
           ),
@@ -142,8 +143,20 @@ class _AgentLogoutState extends State<AgentLogout> {
       ),
     );
   }
+}
 
-  Widget profileItem(String title, String value) {
+class profileitem extends StatelessWidget {
+  const profileitem({
+    super.key,
+    required this.title,
+    required this.value,
+  });
+
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(

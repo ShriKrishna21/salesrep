@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:salesrep/agent_dash_board_screen.dart';
+import 'package:salesrep/circulationHead/circulationHeadUser.dart';
 import 'package:salesrep/homescreen.dart';
+import 'package:salesrep/regionalHead/regionalheaduser.dart';
 import 'package:salesrep/unit_manager_dashboard.dart';
 import 'package:salesrep/utils/colors.dart';
 
@@ -30,7 +32,6 @@ class _LoginscreenState extends State<Loginscreen> {
     super.initState();
     // fetchAlbum();
   }
-  
 
   Future<void> fetchAlbum() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -58,37 +59,44 @@ class _LoginscreenState extends State<Loginscreen> {
         final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
         setState(() {
           _loginData = loginmodel.fromJson(jsonResponse);
+    
           print(" login data ==> ${_loginData!.toJson().toString()}");
         });
         print(" result code => ${_loginData!.result!.code}");
-        if (_loginData!.result!.code == "200") {
-          print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
-          print("2");
+        //circulation head dash board
+        if (_loginData!.result!.code == "200" &&
+            _loginData!.result!.roleLeGr == "circulation_head") {
+          print("Redirect to circulation head dashboard");
           await prefs.setString(
               'apikey', _loginData!.result!.apiKey.toString());
+              await prefs.setString('Name', _loginData!.result!.name.toString());
 
           await prefs.setString('unit', _loginData!.result!.unit.toString());
-          await prefs.setString('role',_loginData!.result!.role.toString());
-          await prefs.setString('id',_loginData!.result!.role.toString());
-          print(
-              "oooooooooooooooooooooooo ${_loginData!.result!.unit.toString()}");
-          print(
-              "ttttttttttttttttttttttttttttt${_loginData!.result!.apiKey.toString()}");
-          print("3");
+          await prefs.setString(
+              'role', _loginData!.result!.roleLeGr.toString());
+          await prefs.setString('id', _loginData!.result!.userId.toString());
+          print("unitname ${_loginData!.result!.unit.toString()}");
+          print("apikey${_loginData!.result!.apiKey.toString()}");
 
           final String? action = prefs.getString('apikey');
           print(" API KEY => $action");
-          print("4444444444444444444444444444444$_loginData");
+          print("data$_loginData");
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const AgentDashBoardScreen()),
+            MaterialPageRoute(
+                builder: (context) => const Circulationheaduser()),
           );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Login failed, please try again.")),
+        } else if (_loginData!.result!.code == "200" &&
+            _loginData!.result!.roleLeGr == "regregion_head") {
+              print("Redirect to Regional head dashboard");
+                Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const Regionalheaduser()),
           );
-        }
+
+            }
       } else {
         throw Exception(
             "Failed to fetch the API: Status code ${response.statusCode}");
@@ -118,14 +126,14 @@ class _LoginscreenState extends State<Loginscreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-              //  boxShadow:  [
-                  // const BoxShadow(
-                  //   color: Colors.black26,
-                  //   blurRadius: 10,
-                  //   spreadRadius: 2,
-                  //   offset: const Offset(0, 5),
-                  // ),
-             //   ],
+                //  boxShadow:  [
+                // const BoxShadow(
+                //   color: Colors.black26,
+                //   blurRadius: 10,
+                //   spreadRadius: 2,
+                //   offset: const Offset(0, 5),
+                // ),
+                //   ],
               ),
               width: MediaQuery.of(context).size.width * 0.75,
               height: MediaQuery.of(context).size.height * 0.6,
@@ -210,9 +218,15 @@ class _LoginscreenState extends State<Loginscreen> {
                         ),
                       ),
                     ),
-                    ElevatedButton(onPressed: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => UnitManagerDashboard(),));
-                    }, child: Text("unit manager"))
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UnitManagerDashboard(),
+                              ));
+                        },
+                        child: Text("unit manager"))
                   ],
                 ),
               ),

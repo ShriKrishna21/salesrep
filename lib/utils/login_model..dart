@@ -26,6 +26,7 @@ class loginmodel {
 class Result {
   String? status;
   int? userId;
+  String? name;
   String? apiKey;
   String? roleLeGr;
   String? role;
@@ -36,6 +37,7 @@ class Result {
   Result(
       {this.status,
       this.userId,
+      this.name,
       this.apiKey,
       this.roleLeGr,
       this.role,
@@ -46,6 +48,7 @@ class Result {
   Result.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     userId = json['user_id'];
+    name = json['name'];
     apiKey = json['api_key'];
     roleLeGr = json['role_Le_gr'];
     role = json['role'];
@@ -58,6 +61,7 @@ class Result {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['status'] = this.status;
     data['user_id'] = this.userId;
+    data['name'] = this.name;
     data['api_key'] = this.apiKey;
     data['role_Le_gr'] = this.roleLeGr;
     data['role'] = this.role;
