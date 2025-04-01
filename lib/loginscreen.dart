@@ -87,7 +87,7 @@ class _LoginscreenState extends State<Loginscreen> {
             MaterialPageRoute(
                 builder: (context) => const Circulationheaduser()),
           );
-        } else if (_loginData!.result!.code == "200" &&
+        }  if (_loginData!.result!.code == "200" &&
             _loginData!.result!.roleLeGr == "regregion_head") {
               print("Redirect to Regional head dashboard");
                 Navigator.pushReplacement(
