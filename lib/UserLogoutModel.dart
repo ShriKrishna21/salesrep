@@ -1,12 +1,11 @@
-class agentlogout {
+class userlogout {
   String? jsonrpc;
   Null? id;
-  Result? 
-  result;
+  Result? result;
 
-  agentlogout({this.jsonrpc, this.id, this.result});
+  userlogout({this.jsonrpc, this.id, this.result});
 
-  agentlogout.fromJson(Map<String, dynamic> json) {
+  userlogout.fromJson(Map<String, dynamic> json) {
     jsonrpc = json['jsonrpc'];
     id = json['id'];
     result =
