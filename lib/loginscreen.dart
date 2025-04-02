@@ -24,20 +24,21 @@ class _LoginscreenState extends State<Loginscreen> {
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final response = 0;
+  String? api="http://10.100.13.138:8099";
 
   loginmodel? _loginData; // Variable to store fetched login data
 
   @override
   void initState() {
     super.initState();
-    // fetchAlbum();
+    fetchAlbum();
   }
 
   Future<void> fetchAlbum() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     try {
-      const url = 'http://10.100.13.138:8099/web/session/authenticate';
+      final url = '$api/web/session/authenticate';
 
       final response = await http.post(
         Uri.parse(url),
@@ -66,7 +67,7 @@ class _LoginscreenState extends State<Loginscreen> {
 
         //circulation head dash board
         if (_loginData!.result!.code == "200" &&
-            _loginData!.result!.roleLeGr == "circulation_head") {
+            _loginData!.result!.name == "admin") {
           print("Redirect to circulation head dashboard");
           await prefs.setString(
               'apikey', _loginData!.result!.apiKey.toString());
@@ -88,7 +89,7 @@ class _LoginscreenState extends State<Loginscreen> {
                 builder: (context) => const Circulationheaduser()),
           );
         }  if (_loginData!.result!.code == "200" &&
-            _loginData!.result!.roleLeGr == "regregion_head") {
+            _loginData!.result!.roleLeGr == "") {
               print("Redirect to Regional head dashboard");
                 Navigator.pushReplacement(
             context,
@@ -126,14 +127,7 @@ class _LoginscreenState extends State<Loginscreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                //  boxShadow:  [
-                // const BoxShadow(
-                //   color: Colors.black26,
-                //   blurRadius: 10,
-                //   spreadRadius: 2,
-                //   offset: const Offset(0, 5),
-                // ),
-                //   ],
+
               ),
               width: MediaQuery.of(context).size.width * 0.75,
               height: MediaQuery.of(context).size.height * 0.6,
@@ -166,7 +160,7 @@ class _LoginscreenState extends State<Loginscreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 5),
+                   SizedBox(height: 5),
                     Padding(
                       padding: EdgeInsets.all(
                           MediaQuery.of(context).size.height / 50),

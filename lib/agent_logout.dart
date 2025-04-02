@@ -44,7 +44,9 @@ class _AgentLogoutState extends State<AgentLogout> {
 
         print(" hashhhhhhhhhhhhhhhhhhhhhhhhhhhhhh${respond.statusCode}");
       }
+         prefs.clear();
       if(logoutt!.result!.code == "200"){
+     
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Loginscreen(),));
 
         print("sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
@@ -123,7 +125,9 @@ class _AgentLogoutState extends State<AgentLogout> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
+                  
                   agentLogout();
+
                   
                 },
                 style: ElevatedButton.styleFrom(
