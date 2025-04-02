@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
-import 'package:salesrep/modelClasses/createUserModel.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:salesrep/modelClasses/createUserModel.dart';
 
 class Createregionalhead extends StatefulWidget {
   const Createregionalhead({super.key});
@@ -16,53 +18,116 @@ class Createregionalhead extends StatefulWidget {
 class _CreateregionalheadState extends State<Createregionalhead> {
   createUserModel? userdata;
   final _formKey = GlobalKey<FormState>();
-  TextEditingController name = TextEditingController();
-  TextEditingController unit = TextEditingController();
-  TextEditingController userid = TextEditingController();
 
-  // Additional controllers for dynamic fields
-  TextEditingController password = TextEditingController();
-  TextEditingController regionCodeController = TextEditingController();
-  TextEditingController branchNameController = TextEditingController();
+  // Controllers
+  final TextEditingController name = TextEditingController();
+  final TextEditingController unit = TextEditingController();
+  final TextEditingController mail = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  final TextEditingController adhar = TextEditingController();
+  final TextEditingController pan = TextEditingController();
+  final TextEditingController phone = TextEditingController();
+  final TextEditingController state = TextEditingController();
 
+  // Dropdown user type
   String? Selecteduser;
   List<String> Usertype = ['region_head', 'unit_manager', 'agent'];
+
+  // Aadhaar and PAN images
+  File? aadhaarImage;
+  File? pancardImage;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> pickAadhaarImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        aadhaarImage = File(image.path);
+      });
+    }
+  }
+
+  Future<void> pickPancardImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        pancardImage = File(image.path);
+      });
+    }
+  }
+
   Future<void> createuser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? userlog = await prefs.getString('apikey');
+    final String? userlog = prefs.getString('apikey');
+
+    // Optional: Encode Aadhaar and PAN images
+    // String? base64AadhaarImage;
+    // if (aadhaarImage != null) {
+    //   final bytes = await aadhaarImage!.readAsBytes();
+    //   base64AadhaarImage = base64Encode(bytes);
+    // }
+
     try {
       const url = "http://10.100.13.138:8099/sales_rep_user_creation";
-      final response = await http.post(Uri.parse(url),
-          headers: {
-          'Content-Type': 'application/json', // Required for JSON-RPC requests
-          },
-          body: jsonEncode({
-            "params": {
-              "token": userlog,
-              "name": name.text,
-              "unit_name": unit.text,
-              "email": userid.text,
-              "password": password.text,
-              "role": Selecteduser,
-            }
-          }));
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "params": {
+            "token": userlog,
+            "name": name.text,
+            "email": mail.text,
+            "password": password.text,
+            "role": Selecteduser,
+            "aadhar_number": adhar.text,
+            "pan_number": pan.text,
+            "state": state.text,
+            "status": "active",
+            "phone": phone.text,
+            "unit_name": unit.text,
+          }
+        }),
+      );
+
+      print(response.statusCode);
+      
+
       if (response.statusCode == 200) {
-        print("$response.stauscode");
         final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
         userdata = createUserModel.fromJson(jsonResponse);
+        print(userdata!.result?.code);
+        // print(userdata!.result?.)
+
         if (userdata!.result?.code == "200") {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("User created successfully")),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("user creation failed ")),
+            const SnackBar(content: Text("User creation failed")),
           );
         }
       }
     } catch (error) {
-      print("error in creating user$error");
+      print("Error in creating user: $error");
     }
+  }
+
+  void createduser() {
+    CollectionReference collref =
+        FirebaseFirestore.instance.collection("created_users");
+
+    collref.add({
+      "params": {
+        "name": name.text,
+        "email": mail.text,
+        "password": password.text,
+        "role": Selecteduser,
+        "aadhar_number": adhar.text,
+        "pan_number": pan.text,
+        "state": state.text,
+      }
+    });
   }
 
   @override
@@ -72,12 +137,11 @@ class _CreateregionalheadState extends State<Createregionalhead> {
         toolbarHeight: MediaQuery.of(context).size.height / 12,
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
-        title: RichText(
-          text: TextSpan(
-            text: "Create user  ",
-            style: TextStyle(
-                fontSize: MediaQuery.of(context).size.height / 34,
-                fontWeight: FontWeight.bold),
+        title: Text(
+          "Create User",
+          style: TextStyle(
+            fontSize: MediaQuery.of(context).size.height / 34,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -91,7 +155,7 @@ class _CreateregionalheadState extends State<Createregionalhead> {
                 DropdownButton<String>(
                   isExpanded: true,
                   value: Selecteduser,
-                  hint: Text("Select User Type"),
+                  hint: const Text("Select User Type"),
                   items: Usertype.map((String user) {
                     return DropdownMenuItem<String>(
                       value: user,
@@ -104,47 +168,155 @@ class _CreateregionalheadState extends State<Createregionalhead> {
                     });
                   },
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 usercredentials(
-                    controller: name,
-                    hintText: "Name",
-                    errorText: "please enter valid name"),
-                usercredentials(
-                    controller: unit,
-                    hintText: "Unit name",
-                    errorText: "please enter valid name"),
-                usercredentials(
-                    controller: userid,
-                    hintText: "user id",
-                    errorText: "please enter valid name"),
-                usercredentials(
-                    controller: password,
-                    hintText: "password",
-                    errorText: "please enter valid name"),
-                SizedBox(
-                  height: 25,
+                  controller: name,
+                  hintText: "Name",
+                  errorText: "Please enter a valid name",
                 ),
+                usercredentials(
+                  controller: unit,
+                  hintText: "Unit Name",
+                  errorText: "Please enter a valid unit name",
+                ),
+                usercredentials(
+                  keyboardType: TextInputType.phone,
+                  maxvalue: 10,
+                  controller: phone,
+                  hintText: "phone",
+                  errorText: "Please enter a valid phone number ",
+                ),
+                // usercredentials(
+                //   controller: unit,
+                //   hintText: "unit name",
+                //   errorText: "Please enter a valid unit name ",
+                // ),
+                usercredentials(
+                  controller: mail,
+                  hintText: "Email/User ID",
+                  errorText: "Please enter a valid email",
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                usercredentials(
+                  controller: password,
+                  hintText: "Password",
+                  errorText: "Please enter a valid password",
+                  keyboardType: TextInputType.visiblePassword,
+                ),
+                usercredentials(
+                  controller: state,
+                  hintText: "Address",
+                  errorText: "Address cannot be empty",
+                ),
+                usercredentials(
+                  controller: adhar,
+                  hintText: "Aadhaar Number",
+                  errorText: "Invalid Aadhaar Number",
+                  keyboardType: TextInputType.number,
+                  maxvalue: 12,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter Aadhaar number";
+                    }
+                    final aadhaarRegex = RegExp(r'^\d{12}$');
+                    if (!aadhaarRegex.hasMatch(value)) {
+                      return "Aadhaar must be exactly 12 digits";
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Upload Aadhaar Photo",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 8),
                 GestureDetector(
-                  onTap: ()async {
-                
-                      // if(_formKey.currentState?.validate() ?? false){
-                       await createuser();
-                    //  }
-                    // Navigator.pop(context);
+                  onTap: pickAadhaarImage,
+                  child: Container(
+                    height: 150,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      border: Border.all(color: Colors.black),
+                    ),
+                    child: aadhaarImage != null
+                        ? Image.file(aadhaarImage!, fit: BoxFit.cover)
+                        : const Center(
+                            child: Text("Tap to select Aadhaar image")),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                usercredentials(
+                  controller: pan,
+                  hintText: "PAN Number",
+                  errorText: "Invalid PAN Number",
+                  maxvalue: 10,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter PAN number";
+                    }
+                    final panRegex = RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$');
+                    if (!panRegex.hasMatch(value.toUpperCase())) {
+                      return "PAN format: ABCDE1234F";
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Upload PAN Card Photo",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: pickPancardImage,
+                  child: Container(
+                    height: 150,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      border: Border.all(color: Colors.black),
+                    ),
+                    child: pancardImage != null
+                        ? Image.file(pancardImage!, fit: BoxFit.cover)
+                        : const Center(
+                            child: Text("Tap to select PAN card image")),
+                  ),
+                ),
+                const SizedBox(height: 25),
+                GestureDetector(
+                  onTap: () async {
+                    if (_formKey.currentState?.validate() ?? false) {
+                      createduser();
+                      await createuser();
+                    }
                   },
                   child: Container(
-                    height: MediaQuery.of(context).size.height / 28,
-                    width: MediaQuery.of(context).size.width / 4,
-                    color: Colors.blue,
-                    child: Center(
-                        child: Text(
-                      "create User",
-                      style: TextStyle(
-                        fontSize: MediaQuery.of(context).size.height / 56,
+                    height: MediaQuery.of(context).size.height / 18,
+                    width: MediaQuery.of(context).size.width / 2.5,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Create User",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                    )),
+                    ),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -154,51 +326,53 @@ class _CreateregionalheadState extends State<Createregionalhead> {
   }
 }
 
+// Reusable input widget
 class usercredentials extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final String errorText;
+  final int? maxvalue;
+  final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
 
   const usercredentials({
     required this.controller,
     required this.hintText,
     required this.errorText,
+    this.maxvalue,
+    this.keyboardType,
+    this.validator,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(3, 4),
-          )
-        ],
-      ),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
-        validator: (value) {
-          if (value == null || value.isEmpty) ;
-          {
-            return errorText;
-          }
-        },
+        maxLength: maxvalue,
+        keyboardType: keyboardType ?? TextInputType.text,
+        validator: validator ??
+            (value) {
+              if (value == null || value.isEmpty) {
+                return errorText;
+              }
+              return null;
+            },
         controller: controller,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
           filled: true,
           fillColor: Colors.blueGrey[200],
           contentPadding:
-              EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-          enabledBorder: OutlineInputBorder(
+              const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+          enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.black),
           ),
-          focusedBorder: OutlineInputBorder(
+          focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.black, width: 2),
           ),
         ),
