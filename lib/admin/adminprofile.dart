@@ -2,19 +2,18 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:salesrep/UserLogoutModel.dart';
-import 'package:salesrep/agent_logout.dart';
 import 'package:http/http.dart' as http;
 import 'package:salesrep/loginscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Circulationheadprofile extends StatefulWidget {
-  const Circulationheadprofile({super.key});
+class adminProfile extends StatefulWidget {
+  const adminProfile({super.key});
 
   @override
-  State<Circulationheadprofile> createState() => _CirculationheadprofileState();
+  State<adminProfile> createState() => _adminProfileState();
 }
 
-class _CirculationheadprofileState extends State<Circulationheadprofile> {
+class _adminProfileState extends State<adminProfile> {
   String? Name;
   String? username;
   String? jobrole;
@@ -104,10 +103,7 @@ class _CirculationheadprofileState extends State<Circulationheadprofile> {
           ),
           child: Column(
             children: [
-              profileitem(title: "Name", value: Name.toString()),
-              profileitem(title: "user ID", value: username.toString()),
-              profileitem(title: "job role", value: jobrole.toString()),
-              profileitem(title: "unit", value: unitname.toString()),
+             
               Spacer(),
               Padding(
                 padding: const EdgeInsets.all(20.0),
