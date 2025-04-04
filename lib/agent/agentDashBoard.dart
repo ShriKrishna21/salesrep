@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:salesrep/agent_logout.dart';
-import 'package:salesrep/coustmerform.dart';
+import 'package:salesrep/agent/agentProfile.dart';
+import 'package:salesrep/agent/coustmerform.dart';
+import 'package:salesrep/agent/historyPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AgentDashBoardScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      getcount = prefs.getInt("count") ?? 0;
+      getcount = prefs.getInt("Name") ?? 0;
       getofferinterestedpeople = prefs.getInt("interetedoffer") ?? 0;
       getoffernotinterestedpeople = prefs.getInt("notinrested") ?? 0;
     });
@@ -56,7 +57,7 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AgentLogout(),
+                      builder: (context) => const agentProfile(),
                     ));
               },
               child: Icon(
@@ -90,7 +91,9 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => Historypage(),));
+                      },
                       icon: const Icon(
                         Icons.stacked_bar_chart,
                         color: Colors.blue,

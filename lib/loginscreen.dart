@@ -2,8 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:salesrep/agent_dash_board_screen.dart';
-import 'package:salesrep/circulationHead/circulationHeadUser.dart';
+import 'package:salesrep/agent/agentDashBoard.dart';
+import 'package:salesrep/admin/adminUser.dart';
+import 'package:salesrep/constant.dart';
 import 'package:salesrep/homescreen.dart';
 import 'package:salesrep/regionalHead/regionalheaduser.dart';
 import 'package:salesrep/unit_manager_dashboard.dart';
@@ -24,7 +25,7 @@ class _LoginscreenState extends State<Loginscreen> {
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final response = 0;
-  String? api="http://10.100.13.138:8099";
+  // String? api="http://10.100.13.138:8099";
 
   loginmodel? _loginData; // Variable to store fetched login data
 
@@ -36,14 +37,15 @@ class _LoginscreenState extends State<Loginscreen> {
 
   Future<void> fetchAlbum() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    print('${apiconstant.api}');
 
     try {
-      final url = '$api/web/session/authenticate';
+      final url = '${apiconstant.api}/web/session/authenticate';
 
       final response = await http.post(
         Uri.parse(url),
         headers: {
-          'Content-Type': 'application/json', // Required for JSON-RPC requests
+          'Content-Type': 'application/json',
         },
         body: jsonEncode({
           'jsonrpc': "2.0",
@@ -60,7 +62,7 @@ class _LoginscreenState extends State<Loginscreen> {
         final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
         setState(() {
           _loginData = loginmodel.fromJson(jsonResponse);
-    
+
           print(" login data ==> ${_loginData!.toJson().toString()}");
         });
         print(" result code => ${_loginData!.result!.code}");
@@ -71,7 +73,7 @@ class _LoginscreenState extends State<Loginscreen> {
           print("Redirect to circulation head dashboard");
           await prefs.setString(
               'apikey', _loginData!.result!.apiKey.toString());
-              await prefs.setString('Name', _loginData!.result!.name.toString());
+          await prefs.setString('Name', _loginData!.result!.name.toString());
 
           await prefs.setString('unit', _loginData!.result!.unit.toString());
           await prefs.setString(
@@ -85,19 +87,28 @@ class _LoginscreenState extends State<Loginscreen> {
           print("data$_loginData");
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-                builder: (context) => const Circulationheaduser()),
+            MaterialPageRoute(builder: (context) => const adminUser()),
           );
-        }  if (_loginData!.result!.code == "200" &&
-            _loginData!.result!.roleLeGr == "") {
-              print("Redirect to Regional head dashboard");
-                Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const Regionalheaduser()),
-          );
+        } else if (_loginData!.result!.code == "200" &&
+            _loginData!.result!.roleLeGr == "agent") {
+               await prefs.setString(
+              'agentlogin', usernameController.text);
 
-            }
+          await prefs.setString(
+              'apikey', _loginData!.result!.apiKey.toString());
+          await prefs.setString('name', _loginData!.result!.name.toString());
+          await prefs.setString('unit', _loginData!.result!.unit.toString());
+          await prefs.setString(
+              'role', _loginData!.result!.roleLeGr.toString());
+              await prefs.setInt('id', _loginData!.result!.userId??0);
+
+          print("Redirect to Regional agent dashboard");
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => AgentDashBoardScreen()),
+          );
+        }
       } else {
         throw Exception(
             "Failed to fetch the API: Status code ${response.statusCode}");
@@ -127,7 +138,6 @@ class _LoginscreenState extends State<Loginscreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-
               ),
               width: MediaQuery.of(context).size.width * 0.75,
               height: MediaQuery.of(context).size.height * 0.6,
@@ -160,7 +170,7 @@ class _LoginscreenState extends State<Loginscreen> {
                         ),
                       ),
                     ),
-                   SizedBox(height: 5),
+                    SizedBox(height: 5),
                     Padding(
                       padding: EdgeInsets.all(
                           MediaQuery.of(context).size.height / 50),

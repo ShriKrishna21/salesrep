@@ -2,22 +2,22 @@ import 'dart:convert';
 import 'package:salesrep/UserLogoutModel.dart';
 import 'package:salesrep/loginscreen.dart';
 
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class AgentLogout extends StatefulWidget {
-  const AgentLogout({super.key});
+class agentProfile extends StatefulWidget {
+  const agentProfile({super.key});
 
   @override
-  State<AgentLogout> createState() => _AgentLogoutState();
+  State<agentProfile> createState() => _agentProfileState();
 }
 
-class _AgentLogoutState extends State<AgentLogout> {
-  String unitname = "";
-  String jobrole = '';
-  String userid = "";
+class _agentProfileState extends State<agentProfile> {
+  String? agentname;
+  String? unitname;
+  String? jobrole;
+  String? userid;
   userlogout? logoutt;
   Future<void> agentLogout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -44,21 +44,44 @@ class _AgentLogoutState extends State<AgentLogout> {
 
         print(" hashhhhhhhhhhhhhhhhhhhhhhhhhhhhhh${respond.statusCode}");
       }
-         prefs.clear();
-      if(logoutt!.result!.code == "200"){
-     
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Loginscreen(),));
+      prefs.clear();
+      if (logoutt!.result!.code == "200") {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Loginscreen(),
+            ));
 
-        print("sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+        print(
+            "sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Log out failed")),
+        );
       }
-      else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Log out failed")),
-          );
-        }
     } catch (error) {
       print("something went wrong : $error");
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    saveddata();
+  }
+
+  Future<void> saveddata() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      final String? name = prefs.getString('Name');
+      final String? id = prefs.getString('id');
+      final String? role = prefs.getString('role');
+      final String? unit = prefs.getString('unit');
+      agentname = name;
+      userid = id;
+      jobrole = role;
+      unitname = unit;
+    });
   }
 
   @override
@@ -68,12 +91,11 @@ class _AgentLogoutState extends State<AgentLogout> {
       appBar: AppBar(
         backgroundColor: Color(0xFF4A90E2),
         title: Text('My Profile'),
-        
       ),
       body: Column(
         children: [
-       const   SizedBox(height: 20),
-         const Stack(
+          const SizedBox(height: 20),
+          const Stack(
             alignment: Alignment.bottomRight,
             children: [
               CircleAvatar(
@@ -110,10 +132,10 @@ class _AgentLogoutState extends State<AgentLogout> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                profileitem(title: "Name", value: "Prashant"),
-                profileitem(title: "User Name", value: "Prashant01@eenadu"),
-                profileitem(title: "Job role", value: "Eenadu Agent"),
-                profileitem(title: "unit name", value: "8827530290"),
+                profileitem(title: "Name", value: agentname.toString()),
+                profileitem(title: "User Name", value: userid.toString()),
+                profileitem(title: "Job role", value: jobrole.toString()),
+                profileitem(title: "unit name", value: unitname.toString()),
               ],
             ),
           ),
@@ -125,10 +147,7 @@ class _AgentLogoutState extends State<AgentLogout> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  
                   agentLogout();
-
-                  
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,
