@@ -21,6 +21,7 @@ class _agentProfileState extends State<agentProfile> {
   userlogout? logoutt;
   Future<void> agentLogout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+     prefs.clear();
     final String? apiKey = await prefs.getString('apikey');
     print(" nnnnnnnnnnnnnnnnnnnnnnnn${apiKey}");
     try {
@@ -36,15 +37,17 @@ class _agentProfileState extends State<agentProfile> {
           }
         }),
       );
+
+      
       if (respond.statusCode == 200) {
         final jsonResponse = jsonDecode(respond.body) as Map<String, dynamic>;
+        prefs.clear();
         setState(() {
           logoutt = userlogout.fromJson(jsonResponse);
         });
 
         print(" hashhhhhhhhhhhhhhhhhhhhhhhhhhhhhh${respond.statusCode}");
       }
-      prefs.clear();
       if (logoutt!.result!.code == "200") {
         Navigator.pushReplacement(
             context,
