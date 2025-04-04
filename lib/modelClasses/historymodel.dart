@@ -13,8 +13,7 @@ class Historymodel {
     return Historymodel(
       jsonrpc: json['jsonrpc'] ?? '',
       id: json['id'],
-      result:
-          json['result'] != null ? Result.fromJson(json['result']) : null,
+      result: json['result'] != null ? Result.fromJson(json['result']) : null,
     );
   }
 }
@@ -29,10 +28,11 @@ class Result {
   });
 
   factory Result.fromJson(Map<String, dynamic> json) {
+    final recordsJson = json['records'];
     return Result(
-      records: (json['records'] as List<dynamic>)
-          .map((e) => SurveyRecord.fromJson(e))
-          .toList(),
+      records: recordsJson != null && recordsJson is List
+          ? recordsJson.map((e) => SurveyRecord.fromJson(e)).toList()
+          : [],
       code: json['code'] ?? '',
     );
   }
