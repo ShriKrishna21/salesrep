@@ -5,11 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:salesrep/agent/agentDashBoard.dart';
 import 'package:salesrep/admin/adminUser.dart';
 import 'package:salesrep/constant.dart';
-import 'package:salesrep/homescreen.dart';
-import 'package:salesrep/regionalHead/regionalheaduser.dart';
-import 'package:salesrep/unit_manager_dashboard.dart';
+import 'package:salesrep/unitmanager/unitManagerDashboard.dart';
 import 'package:salesrep/utils/colors.dart';
-
 import 'package:salesrep/utils/login_model..dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,29 +21,23 @@ class _LoginscreenState extends State<Loginscreen> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final response = 0;
-  // String? api="http://10.100.13.138:8099";
 
-  loginmodel? _loginData; // Variable to store fetched login data
+  loginmodel? _loginData;
 
-  @override
-  void initState() {
-    super.initState();
-    fetchAlbum();
-  }
-
-  Future<void> fetchAlbum() async {
+  Future<void> loginUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    print('${apiconstant.api}');
+    final url = '${apiconstant.api}/web/session/authenticate';
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
 
     try {
-      final url = '${apiconstant.api}/web/session/authenticate';
-
       final response = await http.post(
         Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'jsonrpc': "2.0",
           'method': "call",
@@ -57,66 +48,53 @@ class _LoginscreenState extends State<Loginscreen> {
         }),
       );
 
+    
       if (response.statusCode == 200) {
-        print(response.statusCode);
         final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-        setState(() {
-          _loginData = loginmodel.fromJson(jsonResponse);
+        _loginData = loginmodel.fromJson(jsonResponse);
 
-          print(" login data ==> ${_loginData!.toJson().toString()}");
-        });
-        print(" result code => ${_loginData!.result!.code}");
+        if (_loginData!.result!.code == "200") {
+          await prefs.setString('apikey', _loginData!.result!.apiKey ?? '');
+          await prefs.setString('name', _loginData!.result!.name ?? '');
+          await prefs.setString('unit', _loginData!.result!.unit ?? '');
+          await prefs.setString('role', _loginData!.result!.role ?? '');
+          await prefs.setInt('id', _loginData!.result!.userId ?? 0);
+          await prefs.setString('agentlogin', usernameController.text);
 
-        //circulation head dash board
-        if (_loginData!.result!.code == "200" &&
-            _loginData!.result!.name == "admin") {
-          print("Redirect to circulation head dashboard");
-          await prefs.setString(
-              'apikey', _loginData!.result!.apiKey.toString());
-          await prefs.setString('Name', _loginData!.result!.name.toString());
-
-          await prefs.setString('unit', _loginData!.result!.unit.toString());
-          await prefs.setString(
-              'role', _loginData!.result!.roleLeGr.toString());
-          await prefs.setString('id', _loginData!.result!.userId.toString());
-          print("unitname ${_loginData!.result!.unit.toString()}");
-          print("apikey${_loginData!.result!.apiKey.toString()}");
-
-          final String? action = prefs.getString('apikey');
-          print(" API KEY => $action");
-          print("data$_loginData");
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const adminUser()),
-          );
-        } else if (_loginData!.result!.code == "200" &&
-            _loginData!.result!.roleLeGr == "agent") {
-               await prefs.setString(
-              'agentlogin', usernameController.text);
-
-          await prefs.setString(
-              'apikey', _loginData!.result!.apiKey.toString());
-          await prefs.setString('name', _loginData!.result!.name.toString());
-          await prefs.setString('unit', _loginData!.result!.unit.toString());
-          await prefs.setString(
-              'role', _loginData!.result!.roleLeGr.toString());
-              await prefs.setInt('id', _loginData!.result!.userId??0);
-
-          print("Redirect to Regional agent dashboard");
-
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => AgentDashBoardScreen()),
+          switch (_loginData!.result!.role) {
+            case "admin":
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (_) => const adminUser()));
+              break;
+            case "agent":
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (_) => AgentDashBoardScreen()));
+              break;
+            case "unit_manager":
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (_) => UnitManagerDashboard()));
+              break;
+        
+            default:
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Unknown user role")),
+              );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Login failed: ${_loginData!.result!.code ?? 'Invalid credentials'}")),
           );
         }
       } else {
-        throw Exception(
-            "Failed to fetch the API: Status code ${response.statusCode}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Server error: ${response.statusCode}")),
+        );
       }
     } catch (error) {
-      print("Error fetching data: $error");
-    } finally {
-      // print("API data fetch");
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $error")),
+      );
     }
   }
 
@@ -140,7 +118,6 @@ class _LoginscreenState extends State<Loginscreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               width: MediaQuery.of(context).size.width * 0.75,
-              height: MediaQuery.of(context).size.height * 0.6,
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -151,86 +128,47 @@ class _LoginscreenState extends State<Loginscreen> {
                       height: MediaQuery.of(context).size.height / 7,
                     ),
                     const SizedBox(height: 20),
-                    Padding(
-                      padding: EdgeInsets.all(
-                          MediaQuery.of(context).size.height / 50),
-                      child: TextFormField(
-                        controller: usernameController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Username cannot be empty";
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          labelText: "Username",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                    TextFormField(
+                      controller: usernameController,
+                      validator: (value) =>
+                          value!.isEmpty ? "Username cannot be empty" : null,
+                      decoration: InputDecoration(
+                        labelText: "Username",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),
-                    SizedBox(height: 5),
-                    Padding(
-                      padding: EdgeInsets.all(
-                          MediaQuery.of(context).size.height / 50),
-                      child: TextFormField(
-                        controller: passwordController,
-                        obscureText: true,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Password cannot be empty";
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          labelText: "Password",
-                          suffixIcon: const Icon(Icons.visibility),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                    const SizedBox(height: 15),
+                    TextFormField(
+                      controller: passwordController,
+                      obscureText: true,
+                      validator: (value) =>
+                          value!.isEmpty ? "Password cannot be empty" : null,
+                      decoration: InputDecoration(
+                        labelText: "Password",
+                        suffixIcon: const Icon(Icons.visibility),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.blue,
-                        fixedSize: Size(
-                          MediaQuery.of(context).size.height / 3.3,
-                          MediaQuery.of(context).size.height / 15,
-                        ),
+                        fixedSize: const Size(250, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                       onPressed: () async {
-                        //   fetchAlbum();
-                        if (_formKey.currentState?.validate() ?? false) {
-                          SharedPreferences prefs =
-                              await SharedPreferences.getInstance();
-                          await prefs.setBool('isLoggedIn', true);
-                          await fetchAlbum();
+                        if (_formKey.currentState!.validate()) {
+                          await loginUser();
                         }
                       },
-                      child: const Text(
-                        "LOGIN",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          letterSpacing: 1,
-                        ),
-                      ),
+                      child: const Text("LOGIN", style: TextStyle(fontSize: 18)),
                     ),
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UnitManagerDashboard(),
-                              ));
-                        },
-                        child: Text("unit manager"))
                   ],
                 ),
               ),

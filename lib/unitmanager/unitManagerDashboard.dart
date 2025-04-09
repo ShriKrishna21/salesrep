@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:salesrep/create_unit_manager.dart';
+import 'package:salesrep/unitmanager/agentcreate.dart';
+import 'package:salesrep/unitmanager/numberOfAgents.dart';
+import 'package:salesrep/unitmanager/unitmangerprofile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UnitManagerDashboard extends StatefulWidget {
+  
   const  UnitManagerDashboard({super.key});
 
   @override
@@ -9,6 +13,22 @@ class UnitManagerDashboard extends StatefulWidget {
 }
 
 class _UnitManagerDashboardState extends State<UnitManagerDashboard> {
+  int agentCount = 0; // Initialize the agent count to 0
+
+  @override
+  void initState() {
+    super.initState();
+    _getAgentCount();
+  }
+
+  // Method to get the agent count from SharedPreferences
+  Future<void> _getAgentCount() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      agentCount = prefs.getInt('userCount') ?? 0; // Default to 0 if not set
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,14 +39,14 @@ class _UnitManagerDashboardState extends State<UnitManagerDashboard> {
         actions: [
           GestureDetector(
             onTap: () {
-              // Navigator.push(context, MaterialPageRoute(builder: (context) => AgentLogout(),));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => unitmanagerprofile(),));
             },
-            child: Container(
-              width: 50,
+           child: Container(
+              width: MediaQuery.of(context).size.height / 10,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(width: 2, color: Colors.white,style: BorderStyle.solid)
-              ),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      width: 2, color: Colors.white, style: BorderStyle.solid)),
               child: Icon(
                 Icons.person,
                 size: MediaQuery.of(context).size.height / 16,
@@ -66,12 +86,17 @@ class _UnitManagerDashboardState extends State<UnitManagerDashboard> {
             padding: const EdgeInsets.all(12.0),
             child: Column(
               children: [
-                _buildCard(
-                  title: "Number of resources",
-                  gradientColors: [Colors.white, Colors.redAccent],
-                  rows: const [
-                    _InfoRow(label: "Agents", value: "0"),
-                  ],
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) =>Numberofagents (),));
+                  },
+                  child: _buildCard(
+                    title: "Number of resources",
+                    gradientColors: [Colors.white, Colors.redAccent],
+                    rows: [
+                      _InfoRow(label: "Agents", value: agentCount.toString()),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 20),
                 _buildCard(
@@ -111,7 +136,7 @@ class _UnitManagerDashboardState extends State<UnitManagerDashboard> {
               ),
               onPressed: () {
                 
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CreateUnitManager(),));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => agentcreate(),));
               },
               child: const Text(
                 "Create User",

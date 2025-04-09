@@ -27,8 +27,8 @@ class _HistorypageState extends State<Historypage> {
 
     const String url = 'http://10.100.13.138:8099/api/customer_forms_info';
 
-    print('🔑 API Key: $apiKey');
-    print('👤 User ID: $userId');
+    print(' API Key: $apiKey');
+    print(' User ID: $userId');
 
     if (apiKey == null || userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -54,40 +54,38 @@ class _HistorypageState extends State<Historypage> {
           )
           .timeout(const Duration(seconds: 20));
 
-      print('✅ Response Status Code: ${response.statusCode}');
+      print(' Response Status Code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
         final Historymodel model = Historymodel.fromJson(jsonResponse);
 
-        print('📦 Response JSON: ${jsonEncode(jsonResponse)}');
+        print(' Response JSON: ${jsonEncode(jsonResponse)}');
 
         if (model.result?.code == "200") {
           setState(() {
             history = model;
           });
-          print("✅ Data loaded successfully.");
+          print("Data loaded successfully.");
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(
-                    "⚠️ Invalid data: ${model.result?.records ?? 'Unknown error'}")),
+            SnackBar(content: Text(" Invalid data: ${model.result?.records ?? 'Unknown error'}")),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("❌ Server Error: ${response.statusCode}")),
+          SnackBar(content: Text(" Server Error: ${response.statusCode}")),
         );
       }
     } on TimeoutException {
-      print("⏱️ Request timed out.");
+      print(" Request timed out.");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Request timed out")),
       );
     } on http.ClientException catch (e) {
-      print("🌐 ClientException: $e");
+      print(" ClientException: $e");
       if (!retrying) {
-        print("🔁 Retrying request...");
+        print(" Retrying request...");
         await Future.delayed(const Duration(seconds: 2));
         await datasaved(retrying: true);
         return;
@@ -96,9 +94,9 @@ class _HistorypageState extends State<Historypage> {
         const SnackBar(content: Text("Connection error. Please try again.")),
       );
     } catch (error) {
-      print("🔥 Unexpected error: $error");
+      print(" Unexpected error: $error");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("An unexpected error occurred.")),
+         SnackBar(content: Text("An unexpected error occurred.")),
       );
     } finally {
       setState(() {
@@ -110,7 +108,7 @@ class _HistorypageState extends State<Historypage> {
   @override
   void initState() {
     super.initState();
-    datasaved(); // Fetch data when screen loads
+    datasaved(); 
   }
 
   @override
@@ -132,134 +130,12 @@ class _HistorypageState extends State<Historypage> {
                     return Card(
                       color: Colors.amber,
                       margin: const EdgeInsets.all(10),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Family Head: ${record.familyHeadName}",
-                              //  style: const TextStyle(fontWeight: FontWeight.bold  ),
-                             
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Father: ${record.fatherName}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Mother: ${record.motherName}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Spouse: ${record.spouseName}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("House No: ${record.houseNumber}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Street No: ${record.streetNumber}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("City: ${record.city}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Pincode: ${record.pinCode}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Address: ${record.address}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Mobile: ${record.mobileNumber}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                "Reads Eenadu: ${record.eenaduNewspaper ? 'Yes' : 'No'}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                "Feedback: ${record.feedbackToImproveEenaduPaper}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                "Reads Any Newspaper: ${record.readNewspaper ? 'Yes' : 'No'}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                "Current Newspaper: ${record.currentNewspaper}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                "Reason not taking Eenadu: ${record.reasonForNotTakingEenaduNewsPaper}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                "Reason not reading newspaper: ${record.reasonNotReading}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                "15 Days Free Offer: ${record.freeOffer15Days ? 'Yes' : 'No'}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                                "Reason not taking offer: ${record.reasonNotTakingOffer}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Employed: ${record.employed ? 'Yes' : 'No'}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Job Type: ${record.jobType}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Gov Dept: ${record.jobTypeOne}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Gov Profession: ${record.jobProfession}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Gov Designation: ${record.jobDesignation}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Company Name: ${record.companyName}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Private Position: ${record.profession}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Latitude: ${record.latitude}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Longitude: ${record.longitude}"),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text("Date: ${record.date}"),
-                          ],
+                      child: ListTile(
+                        title: Text(" Family Head: ${record.familyHeadName}"),
+                        subtitle: Text(
+                          " City: ${record.city}\n Mobile: ${record.mobileNumber}",
                         ),
+                        trailing: Text(" ${record.date}"),
                       ),
                     );
                   },

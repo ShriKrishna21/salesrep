@@ -21,7 +21,6 @@ class _agentProfileState extends State<agentProfile> {
   userlogout? logoutt;
   Future<void> agentLogout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-     prefs.clear();
     final String? apiKey = await prefs.getString('apikey');
     print(" nnnnnnnnnnnnnnnnnnnnnnnn${apiKey}");
     try {
@@ -29,7 +28,7 @@ class _agentProfileState extends State<agentProfile> {
       final respond = await http.post(
         Uri.parse(url),
         headers: {
-          'Content-Type': 'application/json', // Required for JSON-RPC requests
+          'Content-Type': 'application/json',
         },
         body: jsonEncode({
           "params": {
@@ -41,7 +40,6 @@ class _agentProfileState extends State<agentProfile> {
       
       if (respond.statusCode == 200) {
         final jsonResponse = jsonDecode(respond.body) as Map<String, dynamic>;
-        prefs.clear();
         setState(() {
           logoutt = userlogout.fromJson(jsonResponse);
         });
@@ -69,19 +67,19 @@ class _agentProfileState extends State<agentProfile> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    super.initState();
     saveddata();
   }
 
   Future<void> saveddata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      final String? name = prefs.getString('Name');
-      final String? id = prefs.getString('id');
+      final String? name = prefs.getString('name');
+      final int? id = prefs.getInt('id');
       final String? role = prefs.getString('role');
       final String? unit = prefs.getString('unit');
       agentname = name;
-      userid = id;
+      userid = id.toString();
       jobrole = role;
       unitname = unit;
     });
@@ -194,7 +192,7 @@ class profileitem extends StatelessWidget {
             child: Text(
               value,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
