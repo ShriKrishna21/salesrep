@@ -114,8 +114,13 @@ class _HistorypageState extends State<Historypage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("History")),
-      body: isLoading
+      appBar: AppBar(
+        title: const Text("History"),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+      ),
+      body: 
+      isLoading
           ? const Center(child: CircularProgressIndicator())
           : history?.result?.records != null
               ? ListView.builder(
@@ -123,6 +128,7 @@ class _HistorypageState extends State<Historypage> {
                   itemBuilder: (context, index) {
                     final record = history!.result!.records[index];
                     return Card(
+                      color: Colors.amber,
                       margin: const EdgeInsets.all(10),
                       child: ListTile(
                         title: Text(" Family Head: ${record.familyHeadName}"),
