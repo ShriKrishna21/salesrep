@@ -1,10 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:salesrep/admin/admin.dart';
 import 'package:salesrep/admin/adminprofile.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 
 class adminUser extends StatefulWidget {
   const adminUser({super.key});
@@ -14,47 +10,6 @@ class adminUser extends StatefulWidget {
 }
 
 class _adminUserState extends State<adminUser> {
-  Future<void> circulationHeadLogout() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? apiKey = await prefs.getString('apikey');
-    try {
-      final token =
-          apiKey;
-
-      final uri = Uri.http(
-        '10.100.13.138:8099',
-        'api/users?',
-        {
-          'params.token': token,
-        },
-      );
-
-      final respond = await http.get(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
-      print("Response: ${respond.body}");
-      if (respond.statusCode == 200) {
-        final jsonResponse = jsonDecode(respond.body) as Map<String, dynamic>;
-
-        //  if (logout!.result?.code == "200") {
-        //   print("Logout successful");
-        //       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Loginscreen(),));
-
-        //   }
-        //       else {
-        //   ScaffoldMessenger.of(context).showSnackBar(
-        //     const SnackBar(content: Text("Log out failed")),
-        //   );
-        // }
-      }
-    } catch (error) {
-      print("something went wrong : $error");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +23,7 @@ class _adminUserState extends State<adminUser> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => adminProfile(),
+                    builder: (context) => adminprofile(),
                   ));
             },
             child: Container(
@@ -118,12 +73,12 @@ class _adminUserState extends State<adminUser> {
                 elevation: 6,
               ),
               onPressed: () {
-                circulationHeadLogout();
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (context) => admin(),
-                //     ));
+            
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => admin(),
+                    ));
               },
               child: const Text(
                 "Create User",
@@ -137,30 +92,7 @@ class _adminUserState extends State<adminUser> {
           SizedBox(
             height: 20,
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 6,
-            ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => admin(),
-                  ));
-            },
-            child: const Text(
-              "Display User",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.white),
-            ),
-          ),
+
         ],
       ),
     );

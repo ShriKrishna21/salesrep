@@ -27,8 +27,8 @@ class _HistorypageState extends State<Historypage> {
 
     const String url = 'http://10.100.13.138:8099/api/customer_forms_info';
 
-    print('🔑 API Key: $apiKey');
-    print('👤 User ID: $userId');
+    print(' API Key: $apiKey');
+    print(' User ID: $userId');
 
     if (apiKey == null || userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -54,38 +54,38 @@ class _HistorypageState extends State<Historypage> {
           )
           .timeout(const Duration(seconds: 20));
 
-      print('✅ Response Status Code: ${response.statusCode}');
+      print(' Response Status Code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
         final Historymodel model = Historymodel.fromJson(jsonResponse);
 
-        print('📦 Response JSON: ${jsonEncode(jsonResponse)}');
+        print(' Response JSON: ${jsonEncode(jsonResponse)}');
 
         if (model.result?.code == "200") {
           setState(() {
             history = model;
           });
-          print("✅ Data loaded successfully.");
+          print("Data loaded successfully.");
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("⚠️ Invalid data: ${model.result?.records ?? 'Unknown error'}")),
+            SnackBar(content: Text(" Invalid data: ${model.result?.records ?? 'Unknown error'}")),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("❌ Server Error: ${response.statusCode}")),
+          SnackBar(content: Text(" Server Error: ${response.statusCode}")),
         );
       }
     } on TimeoutException {
-      print("⏱️ Request timed out.");
+      print(" Request timed out.");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Request timed out")),
       );
     } on http.ClientException catch (e) {
-      print("🌐 ClientException: $e");
+      print(" ClientException: $e");
       if (!retrying) {
-        print("🔁 Retrying request...");
+        print(" Retrying request...");
         await Future.delayed(const Duration(seconds: 2));
         await datasaved(retrying: true);
         return;
@@ -94,9 +94,9 @@ class _HistorypageState extends State<Historypage> {
         const SnackBar(content: Text("Connection error. Please try again.")),
       );
     } catch (error) {
-      print("🔥 Unexpected error: $error");
+      print(" Unexpected error: $error");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("An unexpected error occurred.")),
+         SnackBar(content: Text("An unexpected error occurred.")),
       );
     } finally {
       setState(() {
@@ -108,7 +108,7 @@ class _HistorypageState extends State<Historypage> {
   @override
   void initState() {
     super.initState();
-    datasaved(); // Fetch data when screen loads
+    datasaved(); 
   }
 
   @override
@@ -125,11 +125,11 @@ class _HistorypageState extends State<Historypage> {
                     return Card(
                       margin: const EdgeInsets.all(10),
                       child: ListTile(
-                        title: Text("👤 Family Head: ${record.familyHeadName}"),
+                        title: Text(" Family Head: ${record.familyHeadName}"),
                         subtitle: Text(
-                          "🏙️ City: ${record.city}\n📞 Mobile: ${record.mobileNumber}",
+                          " City: ${record.city}\n Mobile: ${record.mobileNumber}",
                         ),
-                        trailing: Text("📅 ${record.date}"),
+                        trailing: Text(" ${record.date}"),
                       ),
                     );
                   },

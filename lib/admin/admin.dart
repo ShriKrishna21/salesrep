@@ -74,23 +74,24 @@ class _adminState extends State<admin> {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           "params": {
-            "token": userlog,
+            "token": userlog.toString(),
             "name": name.text,
             "email": mail.text,
             "password": password.text,
             "role": Selecteduser,
-            // "aadhar_number": adhar.text,
-            // "pan_number": pan.text,
+            "aadhar_number": adhar.text,
+            "pan_number": pan.text,
             "state": state.text,
             "status": "active",
             "phone": phone.text,
             "unit_name": unit.text,
+            "aadhar_base64": "",
+            "Pan_base64": ""
           }
         }),
       );
 
       print(response.statusCode);
-      
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
@@ -186,7 +187,6 @@ class _adminState extends State<admin> {
                   hintText: "phone",
                   errorText: "Please enter a valid phone number ",
                 ),
-              
                 usercredentials(
                   controller: mail,
                   hintText: "Email/User ID",
@@ -221,7 +221,7 @@ class _adminState extends State<admin> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(

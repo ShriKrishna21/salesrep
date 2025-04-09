@@ -8,14 +8,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:salesrep/modelClasses/createUserModel.dart';
 
-class Createregionalhead extends StatefulWidget {
-  const Createregionalhead({super.key});
+class agentcreate extends StatefulWidget {
+  const agentcreate({super.key});
 
   @override
-  State<Createregionalhead> createState() => _CreateregionalheadState();
+  State<agentcreate> createState() => _agentcreateState();
 }
 
-class _CreateregionalheadState extends State<Createregionalhead> {
+class _agentcreateState extends State<agentcreate> {
   createUserModel? userdata;
   final _formKey = GlobalKey<FormState>();
 
@@ -29,10 +29,7 @@ class _CreateregionalheadState extends State<Createregionalhead> {
   final TextEditingController phone = TextEditingController();
   final TextEditingController state = TextEditingController();
 
-  // Dropdown user type
-  String? Selecteduser;
-  List<String> Usertype = ['region_head', 'unit_manager', 'agent'];
-
+  
   // Aadhaar and PAN images
   File? aadhaarImage;
   File? pancardImage;
@@ -74,23 +71,24 @@ class _CreateregionalheadState extends State<Createregionalhead> {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           "params": {
-            "token": userlog,
+            "token": userlog.toString(),
             "name": name.text,
             "email": mail.text,
             "password": password.text,
-            "role": Selecteduser,
+            "role": 'agent',
             "aadhar_number": adhar.text,
             "pan_number": pan.text,
             "state": state.text,
             "status": "active",
             "phone": phone.text,
             "unit_name": unit.text,
+            "aadhar_base64": "",
+            "Pan_base64": ""
           }
         }),
       );
 
       print(response.statusCode);
-      
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
@@ -122,7 +120,7 @@ class _CreateregionalheadState extends State<Createregionalhead> {
         "name": name.text,
         "email": mail.text,
         "password": password.text,
-        "role": Selecteduser,
+        "role": 'agent',
         "aadhar_number": adhar.text,
         "pan_number": pan.text,
         "state": state.text,
@@ -138,7 +136,7 @@ class _CreateregionalheadState extends State<Createregionalhead> {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         title: Text(
-          "Create User",
+          "Create Agent",
           style: TextStyle(
             fontSize: MediaQuery.of(context).size.height / 34,
             fontWeight: FontWeight.bold,
@@ -152,22 +150,7 @@ class _CreateregionalheadState extends State<Createregionalhead> {
             key: _formKey,
             child: Column(
               children: [
-                DropdownButton<String>(
-                  isExpanded: true,
-                  value: Selecteduser,
-                  hint: const Text("Select User Type"),
-                  items: Usertype.map((String user) {
-                    return DropdownMenuItem<String>(
-                      value: user,
-                      child: Text(user),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      Selecteduser = newValue;
-                    });
-                  },
-                ),
+              
                 const SizedBox(height: 10),
                 usercredentials(
                   controller: name,
@@ -186,11 +169,6 @@ class _CreateregionalheadState extends State<Createregionalhead> {
                   hintText: "phone",
                   errorText: "Please enter a valid phone number ",
                 ),
-                // usercredentials(
-                //   controller: unit,
-                //   hintText: "unit name",
-                //   errorText: "Please enter a valid unit name ",
-                // ),
                 usercredentials(
                   controller: mail,
                   hintText: "Email/User ID",
@@ -225,7 +203,7 @@ class _CreateregionalheadState extends State<Createregionalhead> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(

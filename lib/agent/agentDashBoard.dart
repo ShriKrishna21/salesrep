@@ -186,14 +186,14 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(20),
                             ),
-                            color: Colors.white),
+                           color: Colors.white),
                         child: const Center(
                             child: Text(
                           "HouseVisited",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20),
                         )),
-                      ),
+                      ) ,
                       //today Container
                       Container(
                         height: 80,
