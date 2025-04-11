@@ -1,146 +1,95 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:salesrep/modelClasses/historymodel.dart';
+import 'package:salesrep/modelClasses/onedayuser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
-class Historypage extends StatefulWidget {
-  const Historypage({super.key});
+class HistoryPage extends StatefulWidget {
+  const HistoryPage({super.key});
 
   @override
-  State<Historypage> createState() => _HistorypageState();
+  State<HistoryPage> createState() => _HistoryPageState();
 }
 
-class _HistorypageState extends State<Historypage> {
-  Historymodel? history;
+class _HistoryPageState extends State<HistoryPage> {
+  onedayuser? oneDayUser;
   bool isLoading = false;
-
-  Future<void> datasaved({bool retrying = false}) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? apiKey = prefs.getString('apikey');
-    final int? userId = prefs.getInt('id');
-
-    const String url = 'http://10.100.13.138:8099/api/customer_forms_info';
-
-    print(' API Key: $apiKey');
-    print(' User ID: $userId');
-
-    if (apiKey == null || userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Missing API Key or User ID")),
-      );
-      setState(() {
-        isLoading = false;
-      });
-      return;
-    }
-
-    try {
-      final response = await http
-          .post(
-            Uri.parse(url),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({
-              "params": {
-                "user_id": userId.toString(),
-                "token": apiKey,
-              }
-            }),
-          )
-          .timeout(const Duration(seconds: 20));
-
-      print(' Response Status Code: ${response.statusCode}');
-
-      if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-        final Historymodel model = Historymodel.fromJson(jsonResponse);
-
-        print(' Response JSON: ${jsonEncode(jsonResponse)}');
-
-        if (model.result?.code == "200") {
-          setState(() {
-            history = model;
-          });
-          print("Data loaded successfully.");
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(" Invalid data: ${model.result?.records ?? 'Unknown error'}")),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(" Server Error: ${response.statusCode}")),
-        );
-      }
-    } on TimeoutException {
-      print(" Request timed out.");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Request timed out")),
-      );
-    } on http.ClientException catch (e) {
-      print(" ClientException: $e");
-      if (!retrying) {
-        print(" Retrying request...");
-        await Future.delayed(const Duration(seconds: 2));
-        await datasaved(retrying: true);
-        return;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Connection error. Please try again.")),
-      );
-    } catch (error) {
-      print(" Unexpected error: $error");
-      ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text("An unexpected error occurred.")),
-      );
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    datasaved(); 
+    isLoading = true;
+    fetchFormList();
+  }
+
+  Future<void> fetchFormList() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? apiKey = prefs.getString('apikey');
+    final int? userId = prefs.getInt('id');
+
+    try {
+      const url = 'http://10.100.13.138:8099/api/customer_forms_info_one_day';
+      final response = await http
+          .post(
+            Uri.parse(url),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({
+              "params": {"user_id": userId.toString(), "token": apiKey}
+            }),
+          )
+          .timeout(const Duration(seconds: 20));
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        final forms = onedayuser.fromJson(jsonResponse);
+        final customersList = forms.result?.records ?? [];
+
+        prefs.setInt('customerFormCount', customersList.length);
+
+        setState(() {
+          oneDayUser = forms;
+          isLoading = false;
+        });
+      } else {
+        throw Exception('API error: ${response.statusCode}');
+      }
+    } catch (error) {
+      print("Error: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("An error occurred while fetching data.")),
+      );
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final customersList = oneDayUser?.result?.records ?? [];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("History"),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
+        title: const Text("One Day Forms History"),
       ),
-      body: 
-      isLoading
+      body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : history?.result?.records != null
-              ? ListView.builder(
-                  itemCount: history!.result!.records.length,
+          : customersList.isEmpty
+              ? const Center(child: Text("No data found."))
+              : ListView.builder(
+                  itemCount: customersList.length,
                   itemBuilder: (context, index) {
-                    final record = history!.result!.records[index];
+                    final customer = customersList[index];
                     return Card(
-                      color: Colors.amber,
-                      margin: const EdgeInsets.all(10),
                       child: ListTile(
-                        title: Text(" Family Head: ${record.familyHeadName}"),
-                        subtitle: Text(
-                          " City: ${record.city}\n Mobile: ${record.mobileNumber}",
-                        ),
-                        trailing: Text(" ${record.date}"),
+                        title: Text(customer.familyHeadName ?? 'No name'),
+                        subtitle: Text("ID: ${customer.id.toString() ?? 'N/A'}"),
                       ),
                     );
                   },
-                )
-              : const Center(child: Text("No data found")),
+                ),
     );
   }
 }
