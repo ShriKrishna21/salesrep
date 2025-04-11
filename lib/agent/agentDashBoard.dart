@@ -92,7 +92,7 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Historypage(),));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryPage(),));
                       },
                       icon: const Icon(
                         Icons.stacked_bar_chart,
