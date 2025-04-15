@@ -18,6 +18,39 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
   int getofferinterestedpeople = 0;
   int getoffernotinterestedpeople = 0;
   int houseVisited = 0;
+  int target = 0;
+  int getCountt = 0;
+  void _editTarget() {
+    TextEditingController Editcontroller =
+        TextEditingController(text: target.toString());
+
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Edit"),
+              content: TextField(
+                controller: Editcontroller,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(hintText: "Enter New Target"),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Cancel"),
+                ),
+                TextButton(
+                    onPressed: () async {
+                      setState(() {
+                        target = int.tryParse(Editcontroller.text) ?? target;
+                      });
+                      Navigator.pop(context);
+                    },
+                    child: Text("Save")),
+              ],
+            ));
+  }
 
   @override
   void initState() {
@@ -92,7 +125,11 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryPage(),));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const  HistoryPage(),
+                            ));
                       },
                       icon: const Icon(
                         Icons.stacked_bar_chart,
@@ -154,6 +191,7 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
             ),
 
             //1st Big Container
+
             Row(
               children: [
                 Container(
@@ -186,14 +224,14 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(20),
                             ),
-                           color: Colors.white),
+                            color: Colors.white),
                         child: const Center(
                             child: Text(
                           "HouseVisited",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20),
                         )),
-                      ) ,
+                      ),
                       //today Container
                       Container(
                         height: 80,
@@ -214,7 +252,7 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                             color: Colors.lightGreenAccent),
                         child: Center(
                             child: Text(
-                          "Today:$getcount ",
+                          "Today:${getCountt} ",
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20),
                         )),
@@ -240,25 +278,38 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                   child: Column(
                     children: [
                       //   2nd  House Visited Container
+
                       Container(
-                        height: 60,
-                        width: 200,
-                        decoration: const BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black,
-                                  blurRadius: 10,
-                                  offset: Offset(1, 1))
+                          height: 60,
+                          width: 200,
+                          decoration: const BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black,
+                                    blurRadius: 10,
+                                    offset: Offset(1, 1))
+                              ],
+                              borderRadius: BorderRadius.only(),
+                              color: Colors.white),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Target:$target",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              IconButton(
+                                  onPressed: _editTarget,
+                                  icon: const Icon(
+                                    Icons.edit_note_sharp,
+                                    size: 20,
+                                  ))
                             ],
-                            borderRadius: BorderRadius.only(),
-                            color: Colors.white),
-                        child: const Center(
-                            child: Text(
-                          "Target Left:",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
-                        )),
-                      ),
+                          )),
                       //today Container
                       Container(
                         height: 80,
@@ -275,10 +326,10 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                             ),
                             border: Border(
                                 top: BorderSide(color: Colors.black, width: 2)),
-                            color: Colors.red),
+                            color: Colors.blue),
                         child: Center(
                           child: Text(
-                            "Today:${40 - getcount}",
+                            "Today:${target - getCountt}",
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20),
                           ),
@@ -289,6 +340,7 @@ class _AgentDashBoardScreenState extends State<AgentDashBoardScreen> {
                 ),
               ],
             ),
+
             const SizedBox(
               height: 30,
             ),
