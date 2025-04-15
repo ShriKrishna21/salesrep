@@ -21,7 +21,7 @@ class _agentProfileState extends State<agentProfile> {
   userlogout? logoutt;
   Future<void> agentLogout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? apiKey = await prefs.getString('apikey');
+    final String? apiKey =  prefs.getString('apikey');
     print(" nnnnnnnnnnnnnnnnnnnnnnnn${apiKey}");
     try {
       const url = 'http://10.100.13.138:8099/token_validation';
@@ -46,7 +46,8 @@ class _agentProfileState extends State<agentProfile> {
 
         print(" hashhhhhhhhhhhhhhhhhhhhhhhhhhhhhh${respond.statusCode}");
       }
-      if (logoutt!.result!.code == "200") {
+      if (logoutt!=null && logoutt!.result!.code == "200") {
+        await prefs.clear();
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -24,6 +25,9 @@ class _CoustmerState extends State<Coustmer> {
   int offernotintresetedpeoplecount = 0;
   int count = 0;
   int addcount = 0;
+  String latitude="";
+  String longitude="";
+  
 
   final _formKey = GlobalKey<FormState>();
 
@@ -58,13 +62,68 @@ class _CoustmerState extends State<Coustmer> {
   TextEditingController job_proffesion = TextEditingController();
 
   // Employment Dropdown Variables
-  String?   _selectedJobType;
+  String? _selectedJobType;
   String? _selectedGovDepartment;
 
   TextEditingController privateCompanyController = TextEditingController();
-    TextEditingController privatedesignationController = TextEditingController();
+  TextEditingController privatedesignationController = TextEditingController();
 
   TextEditingController privateProffesionController = TextEditingController();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  getCurrentLocation() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      print("Location Denied");
+       LocationPermission get = await Geolocator.requestPermission();
+    } else {
+      Position currentPosition = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      print("Lattitude=${currentPosition.latitude.toString()}");
+      latitude=currentPosition.latitude.toString();
+
+      print("Longitude=${currentPosition.longitude.toString()}");
+      longitude=currentPosition.longitude.toString();
+
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   String agents = '';
   List<String> jobTypes = ["government_job", "private_job"];
@@ -75,7 +134,7 @@ class _CoustmerState extends State<Coustmer> {
   ];
   String? _selectedproffesion;
   List<String> proffesion = ["farmer", "doctor", "teacher", "lawyer", "Artist"];
-  cousmerform? data ;
+  cousmerform? data;
 
   @override
   void initState() {
@@ -91,17 +150,16 @@ class _CoustmerState extends State<Coustmer> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       agents = prefs.getString('name') ?? '';
-     agency.text=agents ;
-        // Set it in the controller too
+      agency.text = agents;
+      // Set it in the controller too
     });
   }
 
   Future<void> uploaddata() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? agentapi = await prefs.getString('apikey');
-    final String? agentlog =await prefs.getString('agentlogin');
-        final String? unit =await prefs.getString('unit');
-
+    final String? agentlog = await prefs.getString('agentlogin');
+    final String? unit = await prefs.getString('unit');
 
     print("Rrddddddddddddddddddddd$agentapi");
 
@@ -113,54 +171,55 @@ class _CoustmerState extends State<Coustmer> {
           'Content-Type': 'application/json', // Required for JSON-RPC requests
         },
         body: jsonEncode({
-         
-   "params": {
-    "token": agentapi,
-    "agent_name": agents,
-    "agent_login": agentlog,
-    "unit_name": unit,
-    "date":datecontroller.text ,
-    "time":  timecontroller.text,
-    "family_head_name": familyhead.text,
-    "father_name": fathersname.text,
-    "mother_name":mothername.text,
-    "spouse_name": spousename.text,
-    "house_number": hno.text,
-    "street_number": streetnumber.text,
-    "city": city.text,
-    "pin_code": pincode.text,
-    "address": adddress.text,
-    "mobile_number": mobile.text,
-    "eenadu_newspaper": _isYes.toString(),
-    "feedback_to_improve_eenadu_paper": feedback_to_improve.text,
-    "read_newspaper": _isAnotherToggle.toString(),
-    "current_newspaper": current_newspaper.text,
-    "reason_for_not_taking_eenadu_newsPaper": reason_for_not_taking_eenadu.text,
-    "reason_not_reading": reason_for_not_reading.text,
-    "free_offer_15_days": _isofferTogle.toString(),
-    "reason_not_taking_offer": reason_for_not_taking_offer.text,
-    "employed": _isemployed.toString(),
-    "job_type": _selectedJobType,
-    "job_type_one": _selectedGovDepartment,
-    "job_profession": job_proffesion.text,
-    "job_designation":job_designation.text,
-    "company_name": privateCompanyController.text,
-    "profession": privateProffesionController.text,
-    "job_designation_one": privatedesignationController.text,
-    "latitude": "40.7128",
-    "longitude": "-74.0060"
-}
-
-
+          "params": {
+            "token": agentapi,
+            "agent_name": agents,
+            "agent_login": agentlog,
+            "unit_name": unit,
+            "date": datecontroller.text,
+            "time": timecontroller.text,
+            "family_head_name": familyhead.text,
+            "father_name": fathersname.text,
+            "mother_name": mothername.text,
+            "spouse_name": spousename.text,
+            "house_number": hno.text,
+            "street_number": streetnumber.text,
+            "city": city.text,
+            "pin_code": pincode.text,
+            "address": adddress.text,
+            "mobile_number": mobile.text,
+            "eenadu_newspaper": _isYes.toString(),
+            "feedback_to_improve_eenadu_paper": feedback_to_improve.text,
+            "read_newspaper": _isAnotherToggle.toString(),
+            "current_newspaper": current_newspaper.text,
+            "reason_for_not_taking_eenadu_newsPaper":
+                reason_for_not_taking_eenadu.text,
+            "reason_not_reading": reason_for_not_reading.text,
+            "free_offer_15_days": _isofferTogle.toString(),
+            "reason_not_taking_offer": reason_for_not_taking_offer.text,
+            "employed": _isemployed.toString(),
+            "job_type": _selectedJobType,
+            "job_type_one": _selectedGovDepartment,
+            "job_profession": job_proffesion.text,
+            "job_designation": job_designation.text,
+            "company_name": privateCompanyController.text,
+            "profession": privateProffesionController.text,
+            "job_designation_one": privatedesignationController.text,
+            "latitude": latitude,
+            "longitude": longitude,
+          }
         }),
+        
       );
+     // print("======================================>>>>>>>>>>>>>>>>>>>>>${latitude}");
       if (responsee.statusCode == 200) {
         print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwww${responsee.statusCode}");
-           final jsonResponse = jsonDecode(responsee.body) as Map<String, dynamic>;
-           setState(() {
-             data=cousmerform.fromJson(jsonResponse);
-             print("ttttttttttttttttttttttttttttttttttt${data?.toJson().toString()}");
-           });
+        final jsonResponse = jsonDecode(responsee.body) as Map<String, dynamic>;
+        setState(() {
+          data = cousmerform.fromJson(jsonResponse);
+          print(
+              "ttttttttttttttttttttttttttttttttttt${data?.toJson().toString()}");
+        });
 
         if (data?.result?.code == "200") {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -168,12 +227,15 @@ class _CoustmerState extends State<Coustmer> {
           );
 // Load current values from SharedPreferences
           int houseVisited = prefs.getInt("house_visited") ?? 0;
-          int targetLeft = prefs.getInt("target_left") ?? 40;
+          int targetLeft = prefs.getInt("target_left") ?? 0;
           int alreadySubscribed = prefs.getInt("already_Subscribed") ?? 0;
           int offerAccepted = prefs.getInt("offer_Accepted") ?? 0;
           int offerRejected = prefs.getInt("offer_Rejected") ?? 0;
 // Update values
           houseVisited += 1; //Increment House Visited
+          if (targetLeft > 0) {
+            targetLeft -= 1;
+          }
           targetLeft -= 1; //Decrease TargetLeft
 // Update Report Fields Based On Form Input
           if (_isYes) {
@@ -205,6 +267,7 @@ class _CoustmerState extends State<Coustmer> {
           //   context,
           //   MaterialPageRoute(builder: (context) => const Homescreen()),
           // );
+    
           Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -269,13 +332,24 @@ class _CoustmerState extends State<Coustmer> {
                         fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
                 textformfeild(
-                    controller: familyhead, label: "Family Head Name",hunttext: "family head name cannot be empty"),
+                    controller: familyhead,
+                    label: "Family Head Name",
+                    hunttext: "family head name cannot be empty"),
                 const SizedBox(height: 10),
-                textformfeild(controller: fathersname, label: "Father's Name",hunttext:"fathers name cannot be empty" ),
+                textformfeild(
+                    controller: fathersname,
+                    label: "Father's Name",
+                    hunttext: "fathers name cannot be empty"),
                 const SizedBox(height: 10),
-                textformfeild(controller: mothername, label: "Mother's Name",hunttext:"mothers name cannot be empty" ),
+                textformfeild(
+                    controller: mothername,
+                    label: "Mother's Name",
+                    hunttext: "mothers name cannot be empty"),
                 const SizedBox(height: 10),
-                textformfeild(controller: spousename, label: "Spouse Name",hunttext:"spouse name cannot be empty "),
+                textformfeild(
+                    controller: spousename,
+                    label: "Spouse Name",
+                    hunttext: "spouse name cannot be empty "),
                 const SizedBox(height: 10),
 
                 const SizedBox(height: 15),
@@ -309,7 +383,7 @@ class _CoustmerState extends State<Coustmer> {
                   children: [
                     Expanded(
                         child: textformfeild(
-                          hunttext: "city cannot be empty",
+                            hunttext: "city cannot be empty",
                             controller: city,
                             label: "city",
                             keyboardType: TextInputType.text)),
@@ -318,7 +392,7 @@ class _CoustmerState extends State<Coustmer> {
                     ),
                     Expanded(
                         child: textformfeild(
-                          hunttext: "pincode cannot be empty",
+                            hunttext: "pincode cannot be empty",
                             maxvalue: 6,
                             controller: pincode,
                             textForCounter: "",
@@ -330,7 +404,7 @@ class _CoustmerState extends State<Coustmer> {
                 textformfeild(controller: adddress, label: "Address"),
                 const SizedBox(height: 10),
                 textformfeild(
-                  hunttext: "mobile number cannot empty",
+                    hunttext: "mobile number cannot empty",
                     controller: mobile,
                     maxvalue: 10,
                     label: "mobile number",
@@ -338,7 +412,6 @@ class _CoustmerState extends State<Coustmer> {
 
                 const SizedBox(height: 15),
                 const Text("Newspaper Details",
-                
                     style: TextStyle(
                         color: Colors.blue,
                         fontSize: 18,
@@ -376,7 +449,7 @@ class _CoustmerState extends State<Coustmer> {
                 ),
                 if (_isYes)
                   textformfeild(
-                    hunttext: "feedback cannot be empty",
+                      hunttext: "feedback cannot be empty",
                       controller: feedback_to_improve,
                       label: "Feedback to improve Eenadu"),
 
@@ -409,17 +482,17 @@ class _CoustmerState extends State<Coustmer> {
                   ),
                   if (_isAnotherToggle)
                     textformfeild(
-                      hunttext:"current news paper cannot be empty",
+                        hunttext: "current news paper cannot be empty",
                         controller: current_newspaper,
                         label: "Current Newspaper"),
                   if (_isAnotherToggle)
                     textformfeild(
-                      hunttext: "reason for not talking cannot be empty",
+                        hunttext: "reason for not talking cannot be empty",
                         controller: reason_for_not_taking_eenadu,
                         label: "reason for not talking eenadu Newspaper"),
                   if (!_isAnotherToggle)
                     textformfeild(
-                      hunttext: "reason for not reading cannot be empty",
+                        hunttext: "reason for not reading cannot be empty",
                         controller: reason_for_not_reading,
                         label: "Reason for not Reading Newspaper"),
                   Row(
@@ -450,7 +523,7 @@ class _CoustmerState extends State<Coustmer> {
                   ),
                   if (!_isofferTogle)
                     textformfeild(
-                      hunttext: "feild cannot be empty",
+                        hunttext: "feild cannot be empty",
                         controller: reason_for_not_taking_offer,
                         label: "reason for not taking offer"),
                   const SizedBox(
@@ -555,14 +628,14 @@ class _CoustmerState extends State<Coustmer> {
                       height: 10,
                     ),
                     textformfeild(
-                      hunttext: "feild cannot be empty",
+                        hunttext: "feild cannot be empty",
                         controller: job_designation,
                         label: " Job Designation"),
                     const SizedBox(
                       height: 10,
                     ),
                     textformfeild(
-                         hunttext: "feild cannot be empty",
+                        hunttext: "feild cannot be empty",
                         controller: job_proffesion,
                         label: " Job Department"),
                   ],
@@ -572,15 +645,16 @@ class _CoustmerState extends State<Coustmer> {
                       height: 10,
                     ),
                     textformfeild(
-                         hunttext: "feild cannot be empty",
+                        hunttext: "feild cannot be empty",
                         controller: job_designation,
                         label: " Job Designation"),
                     const SizedBox(
                       height: 10,
                     ),
                     textformfeild(
-                         hunttext: "feild cannot be empty",
-                        controller: job_proffesion, label: " Job Department"),
+                        hunttext: "feild cannot be empty",
+                        controller: job_proffesion,
+                        label: " Job Department"),
                   ],
 
                   if (_selectedGovDepartment == "state_job") ...[
@@ -588,14 +662,14 @@ class _CoustmerState extends State<Coustmer> {
                       height: 10,
                     ),
                     textformfeild(
-                         hunttext: "feild cannot be empty",
+                        hunttext: "feild cannot be empty",
                         controller: job_designation,
-                        label:  " Job Designation"),
+                        label: " Job Designation"),
                     const SizedBox(
                       height: 10,
                     ),
                     textformfeild(
-                         hunttext: "feild cannot be empty",
+                        hunttext: "feild cannot be empty",
                         controller: job_proffesion,
                         label: " Job Department"),
                   ],
@@ -608,18 +682,19 @@ class _CoustmerState extends State<Coustmer> {
                     height: 10,
                   ),
                   textformfeild(
-                       hunttext: "feild cannot be empty",
+                      hunttext: "feild cannot be empty",
                       controller: privateCompanyController,
                       label: "Company Name"),
                   const SizedBox(height: 10),
-                   textformfeild(
-                       hunttext: "feild cannot be empty",
+                  textformfeild(
+                      hunttext: "feild cannot be empty",
                       controller: privatedesignationController,
                       label: "Designation "),
                   const SizedBox(height: 10),
                   textformfeild(
-                       hunttext: "feild cannot be empty",
-                      controller: privateProffesionController, label: "profession"),
+                      hunttext: "feild cannot be empty",
+                      controller: privateProffesionController,
+                      label: "profession"),
                 ],
 
 // If NOT employed, show Profession Dropdown
@@ -645,30 +720,36 @@ class _CoustmerState extends State<Coustmer> {
                           borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                SizedBox(
+                  height: 20,
+                ),
 
                 Center(
                   child: GestureDetector(
-              onTap: () async => {
-                 if (_formKey.currentState?.validate() ?? false) {
-                  datasaved(),
-                        await uploaddata(),
-                      }
-                
-                
-              },
+                    onTap: () async => {
+                      if (_formKey.currentState?.validate() ?? false)
+                        {
+                            
+                         // datasaved(),
+                           await  getCurrentLocation(),
+                          await uploaddata(),
+                           
+                        }
+                    },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.blue,
-                    
-                        borderRadius: BorderRadius.all(Radius.circular(50))
-                      ),
-                      
-                      height: MediaQuery.of(context).size.height/18,
-                      width:MediaQuery.of(context).size.height/5,
-                      child: Center(child: Text("Submit Form",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: MediaQuery.of(context).size.height/45),)),
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                      height: MediaQuery.of(context).size.height / 18,
+                      width: MediaQuery.of(context).size.height / 5,
+                      child: Center(
+                          child: Text(
+                        "Submit Form",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: MediaQuery.of(context).size.height / 45),
+                      )),
                     ),
                   ),
                 )
@@ -679,59 +760,59 @@ class _CoustmerState extends State<Coustmer> {
       ),
     );
   }
-  
-datasaved() {
-  CollectionReference collref = FirebaseFirestore.instance.collection("survey");
-  collref.add({
-   "agent_name": agents,
-            // "agent_login": "johndoe",
-            // "unit_name": "Sales Unit 1",
-            "date": datecontroller.text,
-            "time": timecontroller.text,
-            "family_head_name": familyhead.text,
-            "father_name": fathersname.text,
-            "mother_name": mothername.text,
-            "spouse_name": spousename.text,
-            "house_number": hno.text,
-            "street_number": streetnumber.text,
-            "city": city.text,
-            "pin_code": pincode.text,
-            "address": adddress.text,
-            "mobile_number": mobile.text,
-            "eenadu_newspaper": _isYes,
-            "feedback_to_improve_eenadu_paper": feedback_to_improve.text,
-            "read_newspaper": _isAnotherToggle,
-            "current_newspaper": current_newspaper.text,
-            "reason_for_not_taking_eenadu_newsPaper":
-                reason_for_not_taking_eenadu.text,
-            "reason_not_reading": reason_for_not_reading.text,
-            "free_offer_15_days": _isofferTogle,
-            "reason_not_taking_offer": reason_for_not_taking_offer.text,
-            "employed": _isemployed,
-            "job_type": _selectedJobType,
-            "job_type_one": _selectedGovDepartment,
-            "job_profession": job_designation.text,
-            "job_designation": job_proffesion.text,
-            "company_name": privateCompanyController.text,
-            "profession": privateProffesionController.text,
-            // "job_designation_one": "Lead Developer",
-            "latitude": "40.7128",
-            "longitude": "-74.0060"
 
-  });
-}
+  // datasaved() {
+  //   CollectionReference collref =
+  //       FirebaseFirestore.instance.collection("survey");
+  //   collref.add({
+  //     "agent_name": agents,
+  //     // "agent_login": "johndoe",
+  //     // "unit_name": "Sales Unit 1",
+  //     "date": datecontroller.text,
+  //     "time": timecontroller.text,
+  //     "family_head_name": familyhead.text,
+  //     "father_name": fathersname.text,
+  //     "mother_name": mothername.text,
+  //     "spouse_name": spousename.text,
+  //     "house_number": hno.text,
+  //     "street_number": streetnumber.text,
+  //     "city": city.text,
+  //     "pin_code": pincode.text,
+  //     "address": adddress.text,
+  //     "mobile_number": mobile.text,
+  //     "eenadu_newspaper": _isYes,
+  //     "feedback_to_improve_eenadu_paper": feedback_to_improve.text,
+  //     "read_newspaper": _isAnotherToggle,
+  //     "current_newspaper": current_newspaper.text,
+  //     "reason_for_not_taking_eenadu_newsPaper":
+  //         reason_for_not_taking_eenadu.text,
+  //     "reason_not_reading": reason_for_not_reading.text,
+  //     "free_offer_15_days": _isofferTogle,
+  //     "reason_not_taking_offer": reason_for_not_taking_offer.text,
+  //     "employed": _isemployed,
+  //     "job_type": _selectedJobType,
+  //     "job_type_one": _selectedGovDepartment,
+  //     "job_profession": job_designation.text,
+  //     "job_designation": job_proffesion.text,
+  //     "company_name": privateCompanyController.text,
+  //     "profession": privateProffesionController.text,
+  //     // "job_designation_one": "Lead Developer",
+  //     "latitude": "40.7128",
+  //     "longitude": "-74.0060"
+  //   });
+  // }
 }
 
-    //  ElevatedButton(
-    //                 onPressed: () async {
-                     
-    //                 },
-    //                 child: const Center(
-    //                     child: Text(
-    //                   "submit Form",
-    //                   style:
-    //                       TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-    //                 )))
+//  ElevatedButton(
+//                 onPressed: () async {
+
+//                 },
+//                 child: const Center(
+//                     child: Text(
+//                   "submit Form",
+//                   style:
+//                       TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+//                 )))
 
 SizedBox date(
     {required TextEditingController Dcontroller,

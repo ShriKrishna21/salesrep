@@ -54,6 +54,10 @@ class Result {
     code = json['code'];
   }
 
+  get message => null;
+
+  get name => null;
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['status'] = this.status;
