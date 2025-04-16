@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:salesrep/agent/agentDashBoard.dart';
 import 'package:salesrep/admin/adminUser.dart';
 import 'package:salesrep/constant.dart';
+import 'package:salesrep/unit/circulationinchargedashboard.dart';
+import 'package:salesrep/unit/agentcreate.dart';
 import 'package:salesrep/unitmanager/unitManagerDashboard.dart';
 import 'package:salesrep/utils/colors.dart';
 import 'package:salesrep/utils/login_model..dart';
@@ -107,6 +109,12 @@ Future<void> loginUser() async {
                 context,
                 MaterialPageRoute(
                     builder: (_) => const UnitManagerDashboard()));
+            break;
+              case "circulation_incharge":
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const circulationinchargedashboard()));
             break;
           default:
             ScaffoldMessenger.of(context).showSnackBar(

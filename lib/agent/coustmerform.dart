@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:geolocator/geolocator.dart';
+// ignore: depend_on_referenced_packages
+// import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -93,24 +93,24 @@ class _CoustmerState extends State<Coustmer> {
 
 
 
-  getCurrentLocation() async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      print("Location Denied");
-       LocationPermission get = await Geolocator.requestPermission();
-    } else {
-      Position currentPosition = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+  // getCurrentLocation() async {
+  //   LocationPermission permission = await Geolocator.checkPermission();
+  //   if (permission == LocationPermission.denied ||
+  //       permission == LocationPermission.deniedForever) {
+  //     print("Location Denied");
+  //      LocationPermission get = await Geolocator.requestPermission();
+  //   } else {
+  //     Position currentPosition = await Geolocator.getCurrentPosition(
+  //         desiredAccuracy: LocationAccuracy.high);
 
-      print("Lattitude=${currentPosition.latitude.toString()}");
-      latitude=currentPosition.latitude.toString();
+  //     print("Lattitude=${currentPosition.latitude.toString()}");
+  //     latitude=currentPosition.latitude.toString();
 
-      print("Longitude=${currentPosition.longitude.toString()}");
-      longitude=currentPosition.longitude.toString();
+  //     print("Longitude=${currentPosition.longitude.toString()}");
+  //     longitude=currentPosition.longitude.toString();
 
-    }
-  }
+  //   }
+  // }
 
 
 
@@ -731,7 +731,7 @@ class _CoustmerState extends State<Coustmer> {
                         {
                             
                          // datasaved(),
-                           await  getCurrentLocation(),
+                          //  await  getCurrentLocation(),
                           await uploaddata(),
                            
                         }
