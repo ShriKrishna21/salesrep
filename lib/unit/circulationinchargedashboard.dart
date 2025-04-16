@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:salesrep/unit/agentcreate.dart';
+import 'package:salesrep/unit/agentcreate.dart';
 import 'package:salesrep/unitmanager/numberOfAgents.dart';
 import 'package:salesrep/unitmanager/unitmangerprofile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UnitManagerDashboard extends StatefulWidget {
+class circulationinchargedashboard extends StatefulWidget {
   
-  const  UnitManagerDashboard({super.key});
+  const  circulationinchargedashboard({super.key});
 
   @override
-  State<UnitManagerDashboard> createState() => _UnitManagerDashboardState();
+  State<circulationinchargedashboard> createState() => _circulationinchargedashboardState();
 }
 
-class _UnitManagerDashboardState extends State<UnitManagerDashboard> {
+class _circulationinchargedashboardState extends State<circulationinchargedashboard> {
   int agentCount = 0; // Initialize the agent count to 0
 
   @override
@@ -55,9 +57,9 @@ class _UnitManagerDashboardState extends State<UnitManagerDashboard> {
         ],
         title: RichText(
           text: TextSpan(
-              text: "Unit manager - ",
+              text: "circulation incharge - ",
               style: TextStyle(
-                  fontSize: MediaQuery.of(context).size.height / 30,
+                  fontSize: MediaQuery.of(context).size.height / 40,
                   fontWeight: FontWeight.bold),
                     children:<TextSpan>[
                       TextSpan(
@@ -135,7 +137,7 @@ class _UnitManagerDashboardState extends State<UnitManagerDashboard> {
               ),
               onPressed: () {
                 
-                Navigator.push(context, MaterialPageRoute(builder: (context) => unitmanagerprofile(),));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => agentcreate(),));
               },
               child: const Text(
                 "Create User",
