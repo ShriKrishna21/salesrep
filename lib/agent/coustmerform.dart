@@ -1,6 +1,7 @@
 import 'dart:convert';
 // ignore: depend_on_referenced_packages
 // import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -93,24 +94,39 @@ class _CoustmerState extends State<Coustmer> {
 
 
 
-  // getCurrentLocation() async {
-  //   LocationPermission permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied ||
-  //       permission == LocationPermission.deniedForever) {
-  //     print("Location Denied");
-  //      LocationPermission get = await Geolocator.requestPermission();
-  //   } else {
-  //     Position currentPosition = await Geolocator.getCurrentPosition(
-  //         desiredAccuracy: LocationAccuracy.high);
 
-  //     print("Lattitude=${currentPosition.latitude.toString()}");
-  //     latitude=currentPosition.latitude.toString();
 
-  //     print("Longitude=${currentPosition.longitude.toString()}");
-  //     longitude=currentPosition.longitude.toString();
 
-  //   }
-  // }
+
+
+ Future<void> getCurrentLocation() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      print("Location Denied");
+       LocationPermission get = await Geolocator.requestPermission();
+    } else {
+      Position currentPosition = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      print("Lattitude=${currentPosition.latitude.toString()}");
+      latitude=currentPosition.latitude.toString();
+
+      print("Longitude=${currentPosition.longitude.toString()}");
+      longitude=currentPosition.longitude.toString();
+      setState(() {
+         longitude;
+      latitude;
+      });
+
+    }
+  }
+
+
+
+
+
+
 
 
 
@@ -151,6 +167,7 @@ class _CoustmerState extends State<Coustmer> {
     setState(() {
       agents = prefs.getString('name') ?? '';
       agency.text = agents;
+     
       // Set it in the controller too
     });
   }
@@ -211,7 +228,9 @@ class _CoustmerState extends State<Coustmer> {
         }),
         
       );
-     // print("======================================>>>>>>>>>>>>>>>>>>>>>${latitude}");
+      // print(latitude);
+      print(longitude);
+     print("======================================>>>>>>>>>>>>>>>>>>>>>${latitude}");
       if (responsee.statusCode == 200) {
         print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwww${responsee.statusCode}");
         final jsonResponse = jsonDecode(responsee.body) as Map<String, dynamic>;
@@ -731,7 +750,7 @@ class _CoustmerState extends State<Coustmer> {
                         {
                             
                          // datasaved(),
-                          //  await  getCurrentLocation(),
+                            await  getCurrentLocation(),
                           await uploaddata(),
                            
                         }
