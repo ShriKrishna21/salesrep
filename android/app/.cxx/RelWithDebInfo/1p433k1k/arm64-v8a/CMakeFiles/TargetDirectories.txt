@@ -1,0 +1,2 @@
+C:/Users/sai charan/Desktop/salesrep/android/app/.cxx/RelWithDebInfo/1p433k1k/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/sai charan/Desktop/salesrep/android/app/.cxx/RelWithDebInfo/1p433k1k/arm64-v8a/CMakeFiles/rebuild_cache.dir

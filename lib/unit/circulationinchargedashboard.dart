@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:salesrep/unit/agentcreate.dart';
-import 'package:salesrep/unit/agentcreate.dart';
 import 'package:salesrep/unitmanager/numberOfAgents.dart';
 import 'package:salesrep/unitmanager/unitmangerprofile.dart';
 import 'package:shared_preferences/shared_preferences.dart';

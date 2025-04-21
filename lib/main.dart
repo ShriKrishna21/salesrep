@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:salesrep/location_screen.dart';
 import 'package:salesrep/loginscreen.dart';
 import 'package:salesrep/splash_screen.dart';
 
